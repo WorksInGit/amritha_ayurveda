@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTextField extends StatelessWidget {
   final String label;
@@ -29,7 +28,7 @@ class AppTextField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: GoogleFonts.poppins(
+          style: TextStyle(
             fontSize: 14.sp,
             fontWeight: FontWeight.w500,
             color: const Color(0xFF333333), // Dark grey for label
@@ -41,10 +40,10 @@ class AppTextField extends StatelessWidget {
           obscureText: obscureText,
           validator: validator,
           keyboardType: keyboardType,
-          style: GoogleFonts.poppins(fontSize: 14.sp, color: Colors.black87),
+          style: TextStyle(fontSize: 14.sp, color: Colors.black87),
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: GoogleFonts.poppins(
+            hintStyle: TextStyle(
               fontSize: 14.sp,
               color: const Color(0xFF9CA3AF), // Light grey hint
             ),

@@ -1,10 +1,11 @@
 import 'package:amritha_ayurveda/core/router/app_router.dart';
+import 'package:amritha_ayurveda/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -15,18 +16,14 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final goRouter = ref.watch(goRouterProvider);
     return ScreenUtilInit(
-      designSize: const Size(390, 844),
-      builder: (context, child) {
+      designSize: const Size(393, 852), // iPhone 14/15 Pro stats roughly
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (_, child) {
         return MaterialApp.router(
           title: 'Amritha Ayurveda',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF006837),
-            ), // Ayurvedic Green
-            useMaterial3: true,
-            fontFamily: GoogleFonts.poppins()
-                .fontFamily, // Using Poppins as a modern font
-          ),
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
           routerConfig: goRouter,
         );
       },

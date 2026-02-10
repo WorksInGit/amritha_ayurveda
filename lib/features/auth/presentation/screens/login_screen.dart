@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -121,12 +120,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     // Title
                     Text(
                       'Login Or Register To Book Your Appointments',
-                      style: GoogleFonts.poppins(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF333333),
-                        height: 1.3,
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            color: const Color(0xFF333333),
+                            height: 1.3,
+                          ),
                     ),
                     SizedBox(height: 30.h),
 
@@ -187,7 +185,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
                           fontSize: 12.sp,
                           color: const Color(0xFF6B7280), // Grey text
                           height: 1.5,
@@ -199,10 +197,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                           TextSpan(
                             text: 'Terms and Conditions',
-                            style: GoogleFonts.poppins(
-                              color: const Color(
-                                0xFF006837,
-                              ), // Primary color link
+                            style: const TextStyle(
+                              color: Color(0xFF006837), // Primary color link
                               fontWeight: FontWeight.w600,
                             ),
                             recognizer: TapGestureRecognizer()
@@ -213,10 +209,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           const TextSpan(text: ' and '),
                           TextSpan(
                             text: 'Privacy Policy.',
-                            style: GoogleFonts.poppins(
-                              color: const Color(
-                                0xFF006837,
-                              ), // Primary color link
+                            style: const TextStyle(
+                              color: Color(0xFF006837), // Primary color link
                               fontWeight: FontWeight.w600,
                             ),
                             recognizer: TapGestureRecognizer()
