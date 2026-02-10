@@ -1,5 +1,8 @@
 import 'package:amritha_ayurveda/core/constants/asset_constants.dart';
+import 'package:amritha_ayurveda/core/presentation/widgets/app_button.dart';
+import 'package:amritha_ayurveda/core/presentation/widgets/app_text_field.dart';
 import 'package:amritha_ayurveda/features/auth/presentation/providers/auth_providers.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -37,7 +40,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       try {
         final authRepo = ref.read(authRepositoryProvider);
 
-        // Call the repository logic
         final response = await authRepo.login(
           _usernameController.text,
           _passwordController.text,
@@ -50,9 +52,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               backgroundColor: const Color(0xFF006837),
             ),
           );
-
-          // TODO: Save token using Shared Preferences if not already done in repo
-          // Navigate to Home
           // context.go('/home');
         }
       } catch (e) {
@@ -77,117 +76,70 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header Section with Logo and Background
-            Container(
-              height: 300.h,
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(AssetConstants.splashBackground),
-                  fit: BoxFit.cover,
-                  opacity: 0.2,
-                ),
-                color: Colors.white,
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      const Color(0xFF006837).withOpacity(0.05),
-                      Colors.white,
-                    ],
+            // Header Image Section
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                // Background Image
+                Container(
+                  height: 280.h,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(AssetConstants.splashBackground),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(
+                        0.3,
+                      ), // Dark overlay for better logo visibility
+                    ),
                   ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      AssetConstants.splashLogo,
-                      width: 100.w,
-                      height: 100.h,
-                    ),
-                    SizedBox(height: 15.h),
-                    Text(
-                      'Amritha Ayurveda',
-                      style: GoogleFonts.poppins(
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF006837),
-                      ),
-                    ),
-                    Text(
-                      'Centre used by Vaidyas',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12.sp,
-                        color: Colors.grey[600],
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ],
+                // Logo
+                SvgPicture.asset(
+                  AssetConstants.splashLogo,
+                  width: 100.w,
+                  height: 100.h,
                 ),
-              ),
+              ],
             ),
 
-            // Login Form Section
+            // Form Section
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Title
                     Text(
-                      'Login',
+                      'Login Or Register To Book Your Appointments',
                       style: GoogleFonts.poppins(
-                        fontSize: 32.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF333333),
+                        height: 1.3,
                       ),
                     ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      'Please sign in to continue.',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16.sp,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    SizedBox(height: 40.h),
+                    SizedBox(height: 30.h),
 
-                    // Username Field
-                    TextFormField(
+                    // Email/Username Field
+                    AppTextField(
+                      label: 'Email',
+                      hintText: 'Enter your email',
                       controller: _usernameController,
-                      style: GoogleFonts.poppins(fontSize: 14.sp),
-                      decoration: InputDecoration(
-                        labelText: 'Username',
-                        hintText: 'Enter your username',
-                        prefixIcon: const Icon(Icons.person_outline),
-                        labelStyle: GoogleFonts.poppins(
-                          color: Colors.grey[600],
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF006837),
-                            width: 2,
-                          ),
-                        ),
-                      ),
+                      keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your username';
+                          return 'Please enter your email';
                         }
                         return null;
                       },
@@ -195,43 +147,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     SizedBox(height: 20.h),
 
                     // Password Field
-                    TextFormField(
+                    AppTextField(
+                      label: 'Password',
+                      hintText: 'Enter password',
                       controller: _passwordController,
                       obscureText: !_isPasswordVisible,
-                      style: GoogleFonts.poppins(fontSize: 14.sp),
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        hintText: 'Enter your password',
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        labelStyle: GoogleFonts.poppins(
-                          color: Colors.grey[600],
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Colors.grey,
                         ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isPasswordVisible
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _isPasswordVisible = !_isPasswordVisible;
-                            });
-                          },
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF006837),
-                            width: 2,
-                          ),
-                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -241,59 +173,59 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       },
                     ),
 
-                    SizedBox(height: 40.h),
+                    SizedBox(height: 30.h),
 
                     // Login Button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56.h,
-                      child: ElevatedButton(
-                        onPressed: _isLoading ? null : _handleLogin,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF006837),
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor: const Color(
-                            0xFF006837,
-                          ).withOpacity(0.6),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: _isLoading
-                            ? SizedBox(
-                                height: 24.h,
-                                width: 24.h,
-                                child: const CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(
-                                'Login',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                      ),
+                    AppButton(
+                      text: 'Login',
+                      onPressed: _handleLogin,
+                      isLoading: _isLoading,
                     ),
 
-                    SizedBox(height: 24.h),
+                    SizedBox(height: 40.h),
 
                     // Terms and Conditions footer
-                    Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 40.w),
-                        child: Text(
-                          'By creating or logging into an account you are agreeing with our Terms and Conditions and Privacy Policy.',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
-                            fontSize: 10.sp,
-                            color: Colors.grey,
-                            height: 1.5,
-                          ),
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: GoogleFonts.poppins(
+                          fontSize: 12.sp,
+                          color: const Color(0xFF6B7280), // Grey text
+                          height: 1.5,
                         ),
+                        children: [
+                          const TextSpan(
+                            text:
+                                'By creating or logging into an account you are agreeing with our ',
+                          ),
+                          TextSpan(
+                            text: 'Terms and Conditions',
+                            style: GoogleFonts.poppins(
+                              color: const Color(
+                                0xFF006837,
+                              ), // Primary color link
+                              fontWeight: FontWeight.w600,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                // Handle T&C tap
+                              },
+                          ),
+                          const TextSpan(text: ' and '),
+                          TextSpan(
+                            text: 'Privacy Policy.',
+                            style: GoogleFonts.poppins(
+                              color: const Color(
+                                0xFF006837,
+                              ), // Primary color link
+                              fontWeight: FontWeight.w600,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                // Handle Privacy Policy tap
+                              },
+                          ),
+                        ],
                       ),
                     ),
                   ],
