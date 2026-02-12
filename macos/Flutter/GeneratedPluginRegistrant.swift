@@ -5,10 +5,10 @@
 import FlutterMacOS
 import Foundation
 
-import printing
-import shared_preferences_foundation
+import device_info_plus
+import flutter_secure_storage_darwin
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
-  PrintingPlugin.register(with: registry.registrar(forPlugin: "PrintingPlugin"))
-  SharedPreferencesPlugin.register(with: registry.registrar(forPlugin: "SharedPreferencesPlugin"))
+  DeviceInfoPlusMacosPlugin.register(with: registry.registrar(forPlugin: "DeviceInfoPlusMacosPlugin"))
+  FlutterSecureStorageDarwinPlugin.register(with: registry.registrar(forPlugin: "FlutterSecureStorageDarwinPlugin"))
 }
