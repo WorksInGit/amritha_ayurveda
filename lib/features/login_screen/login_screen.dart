@@ -1,5 +1,8 @@
 import 'package:amritha_ayurveda/constants.dart';
+import 'package:amritha_ayurveda/core/app_route.dart';
+import 'package:amritha_ayurveda/features/home_screen/home_screen.dart';
 import 'package:amritha_ayurveda/gen/assets.gen.dart';
+import 'package:amritha_ayurveda/services/snackbar_utils.dart';
 import 'package:amritha_ayurveda/widgets/app_button.dart';
 import 'package:amritha_ayurveda/widgets/app_text_field.dart';
 import 'package:flutter/gestures.dart';
@@ -8,6 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 
 import '../../services/size_utils.dart';
+import 'package:amritha_ayurveda/core/repository.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String path = '/login-screen';
@@ -18,15 +22,16 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool isLoading = false;
   final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController(text: 'test_user');
-  final _passwordController = TextEditingController(text: '12345678');
-  bool _isPasswordVisible = false;
+  final usernameController = TextEditingController(text: 'test_user');
+  final passwordController = TextEditingController(text: '12345678');
+  bool isPasswordVisible = false;
 
   @override
   void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
+    usernameController.dispose();
+    passwordController.dispose();
     super.dispose();
   }
 
@@ -93,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     AppTextField(
                       label: 'Email',
                       hintText: 'Enter your email',
-                      controller: _usernameController,
+                      controller: usernameController,
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -108,18 +113,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     AppTextField(
                       label: 'Password',
                       hintText: 'Enter password',
-                      controller: _passwordController,
-                      obscureText: !_isPasswordVisible,
+                      controller: passwordController,
+                      obscureText: !isPasswordVisible,
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isPasswordVisible
+                          isPasswordVisible
                               ? Icons.visibility_off
                               : Icons.visibility,
                           color: Colors.grey,
                         ),
                         onPressed: () {
                           setState(() {
-                            _isPasswordVisible = !_isPasswordVisible;
+                            isPasswordVisible = !isPasswordVisible;
                           });
                         },
                       ),
@@ -136,8 +141,36 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Login Button
                     AppButton(
                       text: 'Login',
-                      onPressed: () {},
-                      isLoading: false,
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          try {
+                            final response = await DataRepository.i.login(
+                              username: usernameController.text,
+                              password: passwordController.text,
+                            );
+
+                            if (mounted) {
+                              showSuccessMessage(response.data['message']);
+                              // ignore: use_build_context_synchronously
+                              navigate(context, HomeScreen.path, replace: true);
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              showErrorMessage(e);
+                            }
+                          } finally {
+                            if (mounted) {
+                              setState(() {
+                                isLoading = false;
+                              });
+                            }
+                          }
+                        }
+                      },
+                      isLoading: isLoading,
                     ),
 
                     gapXL,
