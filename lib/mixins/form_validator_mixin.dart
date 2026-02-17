@@ -40,7 +40,7 @@ mixin FormValidatorMixin<T extends StatefulWidget> on State<T> {
       valid = true;
     }
     if (!valid) {
-      tougleScroll();
+      scrollToTop();
     }
     return valid;
   }

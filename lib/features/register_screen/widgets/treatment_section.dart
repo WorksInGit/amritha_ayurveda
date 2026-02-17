@@ -82,6 +82,7 @@ class TreatmentSection extends StatelessWidget {
     }
 
     showModalBottomSheet(
+      backgroundColor: Colors.white,
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -159,6 +160,7 @@ class TreatmentSection extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: Text(st.treatment.name),
           content: Column(
             mainAxisSize: MainAxisSize.min,

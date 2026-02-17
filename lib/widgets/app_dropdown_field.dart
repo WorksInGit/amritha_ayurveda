@@ -10,6 +10,7 @@ class AppDropdownField<T> extends StatelessWidget {
   final List<T> items;
   final String Function(T) displayText;
   final ValueChanged<T?> onChanged;
+  final String? Function(T?)? validator;
 
   const AppDropdownField({
     super.key,
@@ -19,6 +20,7 @@ class AppDropdownField<T> extends StatelessWidget {
     required this.items,
     required this.displayText,
     required this.onChanged,
+    this.validator,
   });
 
   @override
@@ -36,9 +38,11 @@ class AppDropdownField<T> extends StatelessWidget {
         ),
         gap,
         DropdownButtonFormField<T>(
-          value: value,
+          dropdownColor: Colors.white,
+          initialValue: value,
           isExpanded: true,
           icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFF006837)),
+          validator: validator,
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(fontSize: 14.fSize, color: Colors.grey[400]),

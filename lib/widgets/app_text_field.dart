@@ -44,7 +44,7 @@ class AppTextField extends StatelessWidget {
           validator: validator,
           decoration: InputDecoration(
             hintText: hintText,
-            hintStyle: TextStyle(fontSize: 14.fSize, color: Colors.grey[400]),
+
             contentPadding: EdgeInsets.symmetric(
               horizontal: paddingLarge,
               vertical: paddingLarge,

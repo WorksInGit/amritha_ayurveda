@@ -23,6 +23,7 @@ const inputborder = UnderlineInputBorder(
 );
 
 ThemeData get themeData => ThemeData(
+  scaffoldBackgroundColor: Colors.white,
   tabBarTheme: TabBarThemeData(
     unselectedLabelColor: Color(0xff101317),
     indicatorSize: TabBarIndicatorSize.tab,
@@ -108,18 +109,83 @@ ThemeData get themeData => ThemeData(
     ),
   ),
 
-  inputDecorationTheme: const InputDecorationTheme(
-    border: inputborder,
-    enabledBorder: inputborder,
-    focusedBorder: inputborder,
-    contentPadding: EdgeInsets.zero,
-  ),
-  fontFamily: "Poppins",
   useMaterial3: true,
   platform: TargetPlatform.iOS,
-  primaryColor: Color(0xff006837),
+  fontFamily: "Poppins",
+
+  primaryColor: const Color(0xff006837),
   colorScheme: const ColorScheme.light(primary: Color(0xff006837)),
+
+  inputDecorationTheme: InputDecorationTheme(
+    // Material 3 prefers outline with subtle radius
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(width: 1),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
+    ),
+    focusedBorder: const OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(12)),
+      borderSide: BorderSide(color: Color(0xff006837), width: 1.5),
+    ),
+    errorBorder: const OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(12)),
+      borderSide: BorderSide(color: Colors.red, width: 1),
+    ),
+    focusedErrorBorder: const OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(12)),
+      borderSide: BorderSide(color: Colors.red, width: 1.5),
+    ),
+
+    // Material 3 default spacing (do not keep zero)
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+
+    // Floating label behavior matches M3 spec
+    floatingLabelBehavior: FloatingLabelBehavior.auto,
+
+    // Hint style = lower emphasis than input text
+    hintStyle: TextStyle(
+      color: Colors.grey.shade500,
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+    ),
+
+    // Label style (unfocused)
+    labelStyle: TextStyle(
+      color: Colors.grey.shade700,
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+    ),
+
+    // Focused label uses primary color
+    floatingLabelStyle: const TextStyle(
+      color: Color(0xff006837),
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+    ),
+
+    // Error text styling
+    errorStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+
+    // Helps achieve Material 3 filled-field feel if needed later
+    isDense: false,
+    alignLabelWithHint: true,
+  ),
 );
+
+// inputDecorationTheme: const InputDecorationTheme(
+//   border: inputborder,
+//   enabledBorder: inputborder,
+//   focusedBorder: inputborder,
+//   contentPadding: EdgeInsets.zero,
+// ),
+// fontFamily: "Poppins",
+// useMaterial3: true,
+// platform: TargetPlatform.iOS,
+// primaryColor: Color(0xff006837),
+// colorScheme: const ColorScheme.light(primary: Color(0xff006837)),
 
 extension BuildContextExtension on BuildContext {}
 

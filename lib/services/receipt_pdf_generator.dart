@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:amritha_ayurveda/gen/assets.gen.dart';
 import 'package:amritha_ayurveda/models/branch_model.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/intl.dart';
@@ -74,7 +75,7 @@ class ReceiptPdfGenerator {
     );
 
     // Load SVG logo
-    final svgLogo = await rootBundle.loadString('assets/svgs/splash-logo.svg');
+    final svgLogo = await rootBundle.loadString(Assets.svgs.splashLogo);
 
     final green = PdfColor.fromHex('#006837');
     final grey = PdfColor.fromHex('#666666');
