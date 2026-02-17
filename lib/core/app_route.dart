@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../features/home_screen/home_screen.dart';
+import '../features/register_screen/register_screen.dart';
 import '../features/splash_screen/splash_screen.dart';
 import '../features/login_screen/login_screen.dart';
 import 'logger.dart';
@@ -33,6 +34,10 @@ class AppRoute {
 
       case LoginScreen.path:
         screen = const LoginScreen();
+        return pageRoute(settings, screen);
+
+      case RegisterScreen.path:
+        screen = const RegisterScreen();
         return pageRoute(settings, screen);
 
       default:

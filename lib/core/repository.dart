@@ -72,7 +72,9 @@ import 'dart:convert';
 import 'dart:core';
 import 'package:amritha_ayurveda/core/api_constants.dart';
 import 'package:amritha_ayurveda/core/error_exception_handler.dart';
+import 'package:amritha_ayurveda/models/branch_model.dart';
 import 'package:amritha_ayurveda/models/patient_model.dart';
+import 'package:amritha_ayurveda/models/treatment_model.dart';
 import 'package:amritha_ayurveda/services/shared_preferences_services.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter/foundation.dart';
@@ -162,6 +164,98 @@ class DataRepository {
         onReceiveProgress: onReceiveProgress,
       );
       return await compute(parsePatients, response.data.toString());
+    } catch (e) {
+      throw handleError(e);
+    }
+  }
+
+  Future<List<Branch>> getBranchList() async {
+    try {
+      final response = await _client.get(APIConstants.branchList);
+      final data = response.data;
+      if (data is List) {
+        return data.map<Branch>((json) => Branch.fromJson(json)).toList();
+      }
+      if (data is Map && data['branches'] != null) {
+        return (data['branches'] as List)
+            .map<Branch>((json) => Branch.fromJson(json))
+            .toList();
+      }
+      return [];
+    } catch (e) {
+      throw handleError(e);
+    }
+  }
+
+  Future<List<Treatment>> getTreatmentList({required int branchId}) async {
+    try {
+      final response = await _client.get(APIConstants.treatmentList);
+      final data = response.data;
+
+      List<dynamic> treatmentsList = [];
+
+      if (data is List) {
+        treatmentsList = data;
+      } else if (data is Map && data['treatments'] != null) {
+        treatmentsList = data['treatments'] as List;
+      }
+
+      // Filter treatments that belong to the selected branch
+      if (branchId != 0) {
+        treatmentsList = treatmentsList.where((json) {
+          final branches = json['branches'] as List? ?? [];
+          return branches.any((branch) => branch['id'] == branchId);
+        }).toList();
+      }
+
+      return treatmentsList
+          .map<Treatment>((json) => Treatment.fromJson(json))
+          .toList();
+    } catch (e) {
+      throw handleError(e);
+    }
+  }
+
+  Future<Response> registerPatient({
+    required String name,
+    required String excecutive,
+    required String payment,
+    required String phone,
+    required String address,
+    required String totalAmount,
+    required String discountAmount,
+    required String advanceAmount,
+    required String balanceAmount,
+    required String dateAndTime,
+    required String id,
+    required String male,
+    required String female,
+    required String branch,
+    required String treatments,
+  }) async {
+    try {
+      final data = {
+        'name': name,
+        'excecutive': excecutive,
+        'payment': payment,
+        'phone': phone,
+        'address': address,
+        'total_amount': totalAmount,
+        'discount_amount': discountAmount,
+        'advance_amount': advanceAmount,
+        'balance_amount': balanceAmount,
+        'date_nd_time': dateAndTime,
+        'id': id,
+        'male': male,
+        'female': female,
+        'branch': branch,
+        'treatments': treatments,
+      };
+      final response = await _client.post(
+        APIConstants.patientUpdate,
+        data: FormData.fromMap(data),
+      );
+      return response;
     } catch (e) {
       throw handleError(e);
     }

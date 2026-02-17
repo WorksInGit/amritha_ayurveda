@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:amritha_ayurveda/core/app_route.dart';
 import 'package:amritha_ayurveda/core/repository.dart';
 
 import 'package:amritha_ayurveda/features/home_screen/widgets/patient_list_loading_widget.dart';
+import 'package:amritha_ayurveda/features/register_screen/register_screen.dart';
 import 'package:amritha_ayurveda/models/patient_model.dart';
 import 'package:amritha_ayurveda/widgets/network_resource.dart';
 import 'package:amritha_ayurveda/features/home_screen/widgets/patient_card.dart';
@@ -17,9 +19,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Future<List<Patient>>? _patientListFuture;
-  double _downloadProgress = 0.0;
-  Timer? _progressTimer;
+  Future<List<Patient>>? patientListFuture;
+  double downloadProgress = 0.0;
+  Timer? progressTimer;
 
   @override
   void initState() {
@@ -29,17 +31,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    _progressTimer?.cancel();
+    progressTimer?.cancel();
     super.dispose();
   }
 
-  void _startSimulatedProgress() {
-    _progressTimer?.cancel();
-    _progressTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
-      if (_downloadProgress < 0.9) {
+  void startSimulatedProgress() {
+    progressTimer?.cancel();
+    progressTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      if (downloadProgress < 0.9) {
         if (mounted) {
           setState(() {
-            _downloadProgress += 0.05;
+            downloadProgress += 0.05;
           });
         }
       } else {
@@ -50,27 +52,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> getData() async {
     setState(() {
-      _downloadProgress = 0.0;
-      _startSimulatedProgress();
-      _patientListFuture = DataRepository.i.getPatientList(
+      downloadProgress = 0.0;
+      startSimulatedProgress();
+      patientListFuture = DataRepository.i.getPatientList(
         onReceiveProgress: (count, total) {
           if (total != -1) {
-            _progressTimer?.cancel(); // Cancel simulation if we have real total
+            progressTimer?.cancel();
             final progress = count / total;
             if (mounted) {
               setState(() {
-                _downloadProgress = progress;
+                downloadProgress = progress;
               });
             }
           }
         },
       );
     });
-    await _patientListFuture;
-    _progressTimer?.cancel();
+    await patientListFuture;
+    progressTimer?.cancel();
     if (mounted) {
       setState(() {
-        _downloadProgress = 1.0;
+        downloadProgress = 1.0;
       });
     }
   }
@@ -93,8 +95,8 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
       ),
       body: NetworkResource<List<Patient>>(
-        _patientListFuture,
-        loading: PatientListLoadingWidget(progress: _downloadProgress),
+        patientListFuture,
+        loading: PatientListLoadingWidget(progress: downloadProgress),
         error: (error) => Center(child: Text('Error: $error')),
         success: (data) {
           if (data.isEmpty) {
@@ -119,14 +121,19 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       bottomNavigationBar: Visibility(
-        visible: _downloadProgress == 1.0,
+        visible: downloadProgress == 1.0,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 30.0),
           child: SizedBox(
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () async {
+                final result = await navigate(context, RegisterScreen.path);
+                if (result == true) {
+                  getData();
+                }
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF006837), // Theme Green
                 shape: RoundedRectangleBorder(

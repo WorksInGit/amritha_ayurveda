@@ -1,3 +1,4 @@
+import 'package:amritha_ayurveda/constants.dart';
 import 'package:amritha_ayurveda/models/patient_model.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -44,7 +45,7 @@ class PatientCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                const Gap(8),
+gap,
 
                 // Treatment Name
                 Text(
@@ -80,7 +81,7 @@ class PatientCard extends StatelessWidget {
                       size: 14,
                       color: Color(0xFFDB4437), // Reddish icon color
                     ),
-                    const Gap(4),
+gapSmall,
                     Text(
                       patient.user,
                       style: const TextStyle(fontSize: 12, color: Colors.grey),

@@ -15,41 +15,6 @@ mixin FormValidatorMixin<T extends StatefulWidget> on State<T> {
 
   String debugLabel = "form_key_debug_label";
 
-  // Widget discardBottomSheet(BuildContext context) => CommonBottomSheet(
-  //   title: "Discard Changes",
-  //   child: Column(
-  //     mainAxisSize: MainAxisSize.min,
-  //     children: [
-  //       const Row(),
-  //       const Text("Are you sure want to discard the changes"),
-  //       gapXL,
-  //       AppButton(
-  //         text: 'Discard',
-  //         onPressed: () {
-  //           Navigator.pop(context, true);
-  //         },
-  //         isLoading: false,
-  //       ),
-  //     ],
-  //   ),
-  // );
-
-  // Future<void> onFormPopInvoked(bool didPop, dynamic result) async {
-  //   if (didPop) return;
-  //   if (dataChanged) {
-  //     final result = await showModalBottomSheet(
-  //       context: navigatorKey.currentContext!,
-  //       builder: (context) => discardBottomSheet(context),
-  //     );
-  //     if (result == null) return;
-  //     if (!mounted) return;
-  //     Navigator.pop(context);
-  //   } else {
-  //     if (!mounted) return;
-  //     Navigator.pop(context, true);
-  //   }
-  // }
-
   bool dataChanged = false;
 
   void makeDataChanged() {
