@@ -12,7 +12,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
 mainCommon() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferencesService.i.initialize();
-  await DataRepository.initialize();
+  await DataRepository.i.initialize();
 }
 
 class MyApp extends StatefulWidget {
