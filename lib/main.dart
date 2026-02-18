@@ -1,32 +1,55 @@
-import 'package:amritha_ayurveda/core/router/app_router.dart';
-import 'package:amritha_ayurveda/core/theme/app_theme.dart';
+import 'package:amritha_ayurveda/services/size_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:toastification/toastification.dart';
 
-void main() async {
+import 'core/app_route.dart';
+import 'core/repository.dart';
+import 'theme/theme.dart';
+import 'services/shared_preferences_services.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
+
+mainCommon() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ProviderScope(child: MyApp()));
+  await SharedPreferencesService.i.initialize();
+  await DataRepository.i.initialize();
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final goRouter = ref.watch(goRouterProvider);
-    return ScreenUtilInit(
-      designSize: const Size(393, 852), // iPhone 14/15 Pro stats roughly
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (_, child) {
-        return MaterialApp.router(
-          title: 'Amritha Ayurveda',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.lightTheme,
-          routerConfig: goRouter,
-        );
-      },
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setSystemOverlay();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Sizer(
+      builder:
+          (
+            BuildContext context,
+            Orientation orientation,
+            DeviceType deviceType,
+          ) {
+            return ToastificationWrapper(
+              child: MaterialApp(
+                theme: themeData,
+                navigatorKey: navigatorKey,
+                debugShowCheckedModeBanner: false,
+                onGenerateRoute: AppRoute.onGenerateRoute,
+                onGenerateInitialRoutes: AppRoute.onGenerateInitialRoute,
+              ),
+            );
+          },
     );
   }
 }
