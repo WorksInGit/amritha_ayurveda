@@ -1,4 +1,5 @@
 import 'package:amritha_ayurveda/services/size_utils.dart';
+import 'package:amritha_ayurveda/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 class AppButton extends StatelessWidget {
@@ -20,13 +21,6 @@ class AppButton extends StatelessWidget {
       height: 50.h,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF006837), // Primary Green
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          disabledBackgroundColor: const Color(
-            0xFF006837,
-          ).withValues(alpha: 0.6),
-        ),
         child: isLoading
             ? SizedBox(
                 height: 24.h,
@@ -38,11 +32,7 @@ class AppButton extends StatelessWidget {
               )
             : Text(
                 text,
-                style: TextStyle(
-                  fontSize: 16.fSize,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+                style: context.poppins60017.copyWith(color: Colors.white),
               ),
       ),
     );

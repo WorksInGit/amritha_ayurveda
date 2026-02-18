@@ -6,10 +6,7 @@ import 'package:flutter/material.dart';
 
 import '../register_screen.dart';
 
-/// Mixin that manages all form controllers, state variables, and data loading
-/// for the Register screen.
 mixin RegisterDataMixin<T extends StatefulWidget> on State<T> {
-  // Controllers
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
@@ -18,23 +15,20 @@ mixin RegisterDataMixin<T extends StatefulWidget> on State<T> {
   final advanceAmountController = TextEditingController();
   final balanceAmountController = TextEditingController();
 
-  // Dropdown values
-  String? selectedLocation;
-  Branch? selectedBranch;
-  String selectedPayment = 'Cash';
-  DateTime? selectedDate;
-  int? selectedHour;
-  int? selectedMinute;
+  final selectedLocationNotifier = ValueNotifier<String?>(null);
+  final selectedBranchNotifier = ValueNotifier<Branch?>(null);
+  final selectedPaymentNotifier = ValueNotifier<String>('');
+  final selectedDateNotifier = ValueNotifier<DateTime?>(null);
+  final selectedHourNotifier = ValueNotifier<int?>(null);
+  final selectedMinuteNotifier = ValueNotifier<int?>(null);
 
-  // Data lists
-  List<Branch> branches = [];
-  List<Treatment> treatments = [];
-  final List<SelectedTreatment> selectedTreatments = [];
+  final branchesNotifier = ValueNotifier<List<Branch>>([]);
+  final treatmentsNotifier = ValueNotifier<List<Treatment>>([]);
+  final selectedTreatmentsNotifier = ValueNotifier<List<SelectedTreatment>>([]);
 
-  // Loading state
-  bool isLoadingData = true;
+  final isLoadingDataNotifier = ValueNotifier<bool>(true);
+  final isTreatmentsLoadingNotifier = ValueNotifier<bool>(false);
 
-  // Static location list
   static const locations = [
     'Kozhikode',
     'Kochi',
@@ -61,38 +55,49 @@ mixin RegisterDataMixin<T extends StatefulWidget> on State<T> {
     discountAmountController.dispose();
     advanceAmountController.dispose();
     balanceAmountController.dispose();
+
+    selectedLocationNotifier.dispose();
+    selectedBranchNotifier.dispose();
+    selectedPaymentNotifier.dispose();
+    selectedDateNotifier.dispose();
+    selectedHourNotifier.dispose();
+    selectedMinuteNotifier.dispose();
+    branchesNotifier.dispose();
+    treatmentsNotifier.dispose();
+    selectedTreatmentsNotifier.dispose();
+    isLoadingDataNotifier.dispose();
+    isTreatmentsLoadingNotifier.dispose();
   }
 
   Future<void> loadBranches() async {
     try {
       final result = await DataRepository.i.getBranchList();
       if (mounted) {
-        setState(() {
-          branches = result;
-          isLoadingData = false;
-        });
+        branchesNotifier.value = result;
+        isLoadingDataNotifier.value = false;
       }
     } catch (e) {
       if (mounted) {
-        setState(() => isLoadingData = false);
+        isLoadingDataNotifier.value = false;
         showErrorMessage(e.toString());
       }
     }
   }
 
   Future<void> loadTreatments() async {
+    isTreatmentsLoadingNotifier.value = true;
     try {
       final result = await DataRepository.i.getTreatmentList(
-        branchId: selectedBranch?.id ?? 0,
+        branchId: selectedBranchNotifier.value?.id ?? 0,
       );
       if (mounted) {
-        setState(() {
-          treatments = result;
-          selectedTreatments.clear();
-        });
+        treatmentsNotifier.value = result;
+        selectedTreatmentsNotifier.value = [];
+        isTreatmentsLoadingNotifier.value = false;
       }
     } catch (e) {
       if (mounted) {
+        isTreatmentsLoadingNotifier.value = false;
         showErrorMessage(e.toString());
       }
     }
@@ -102,7 +107,7 @@ mixin RegisterDataMixin<T extends StatefulWidget> on State<T> {
     final now = DateTime.now();
     final picked = await showDatePicker(
       context: context,
-      initialDate: selectedDate ?? now,
+      initialDate: selectedDateNotifier.value ?? now,
       firstDate: now,
       lastDate: now.add(const Duration(days: 365)),
       builder: (ctx, child) {
@@ -115,7 +120,7 @@ mixin RegisterDataMixin<T extends StatefulWidget> on State<T> {
       },
     );
     if (picked != null) {
-      setState(() => selectedDate = picked);
+      selectedDateNotifier.value = picked;
     }
   }
 }

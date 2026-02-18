@@ -22,3 +22,5 @@ Duration animationDuration = 400.ms;
 const Duration animationDurationLarge = Duration(seconds: 1);
 
 const primaryColor = Color(0xFF006837);
+
+const appBlackColor = Color(0xFF404040);

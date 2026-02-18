@@ -1,30 +1,19 @@
-import 'package:amritha_ayurveda/constants.dart';
+import 'package:amritha_ayurveda/core/constants.dart';
 import 'package:amritha_ayurveda/mixins/form_validator_mixin.dart';
 import 'package:amritha_ayurveda/models/treatment_model.dart';
-import 'package:amritha_ayurveda/widgets/app_button.dart';
 import 'package:amritha_ayurveda/services/size_utils.dart';
+import 'package:amritha_ayurveda/widgets/app_button.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
+import '../../theme/theme.dart';
 import 'mixins/register_data_mixin.dart';
 import 'mixins/register_submit_mixin.dart';
-import 'widgets/amount_details_section.dart';
 import 'widgets/date_time_section.dart';
 import 'widgets/patient_details_section.dart';
-import 'widgets/payment_option_section.dart';
+import 'widgets/payment_details_section.dart';
 import 'widgets/treatment_section.dart';
-
-/// A selected treatment entry with male/female counts.
-class SelectedTreatment {
-  final Treatment treatment;
-  int maleCount;
-  int femaleCount;
-
-  SelectedTreatment({
-    required this.treatment,
-    this.maleCount = 1,
-    this.femaleCount = 0,
-  });
-}
+import 'widgets/register_form_scope.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const String path = '/register-screen';
@@ -32,10 +21,10 @@ class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<RegisterScreen> createState() => RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen>
+class RegisterScreenState extends State<RegisterScreen>
     with FormValidatorMixin, RegisterDataMixin, RegisterSubmitMixin {
   @override
   void initState() {
@@ -51,141 +40,103 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.pop(context),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.notifications_none, color: Colors.black),
-              onPressed: () {},
-            ),
-          ],
-        ),
-        body: isLoadingData
-            ? const Center(
-                child: CircularProgressIndicator(color: primaryColor),
-              )
-            : Form(
-                key: formKey,
-                child: SingleChildScrollView(
-                  controller: formScrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Register',
-                        style: TextStyle(
-                          fontSize: 24.fSize,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
+    return RegisterFormScope(
+      state: this,
+      child: ValueListenableBuilder<bool>(
+        valueListenable: isLoadingDataNotifier,
+        builder: (context, isLoadingData, _) {
+          return Scaffold(
+            backgroundColor: Colors.white,
+            appBar: AppBar(backgroundColor: Colors.white),
+            body: isLoadingData
+                ? const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(color: primaryColor),
+                        gapLarge,
+                        Text('Loading...'),
+                      ],
+                    ),
+                  )
+                : Form(
+                    key: formKey,
+                    child: SingleChildScrollView(
+                      controller: formScrollController,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          gapLarge,
+                          Text(
+                            'Register',
+                            style: context.poppins60024.copyWith(
+                              color: appBlackColor,
+                            ),
+                          ),
+                          Gap(13.w),
+                          const Divider(),
+                          gapLarge,
+                          const PatientDetailsSection(),
+                          gapLarge,
+                          const TreatmentSection(),
+                          gapLarge,
+                          const PaymentDetailsSection(),
+                          gapLarge,
+                          const DatePickerSection(),
+                          gapLarge,
+                          const TimePickerSection(),
+                          gapLarge,
+                          AppButton(
+                            text: 'Save',
+                            onPressed: submit,
+                            isLoading: buttonLoading,
+                          ),
+                          Gap(40.w),
+                        ],
                       ),
-                      gapLarge,
-                      PatientDetailsSection(
-                        nameController: nameController,
-                        phoneController: phoneController,
-                        addressController: addressController,
-                        selectedLocation: selectedLocation,
-                        selectedBranch: selectedBranch,
-                        branches: branches,
-                        onLocationChanged: (val) =>
-                            setState(() => selectedLocation = val),
-                        onBranchChanged: (val) {
-                          setState(() => selectedBranch = val);
-                          loadTreatments();
-                        },
-                      ),
-                      gapLarge,
-                      FormField<List<SelectedTreatment>>(
-                        initialValue: selectedTreatments,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) {
-                          if (selectedTreatments.isEmpty) {
-                            return 'Please select at least one treatment';
-                          }
-                          return null;
-                        },
-                        builder: (state) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              TreatmentSection(
-                                treatments: treatments,
-                                selectedTreatments: selectedTreatments,
-                                onChanged: () {
-                                  setState(() {});
-                                  state.didChange(selectedTreatments);
-                                },
-                              ),
-                              if (state.hasError)
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: 5,
-                                    left: 12,
-                                  ),
-                                  child: Text(
-                                    state.errorText!,
-                                    style: TextStyle(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.error,
-                                      fontSize: 12.fSize,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          );
-                        },
-                      ),
-                      gapLarge,
-                      AmountDetailsSection(
-                        totalAmountController: totalAmountController,
-                        discountAmountController: discountAmountController,
-                        advanceAmountController: advanceAmountController,
-                        balanceAmountController: balanceAmountController,
-                      ),
-                      gapLarge,
-                      PaymentOptionSection(
-                        selectedPayment: selectedPayment,
-                        onChanged: (val) =>
-                            setState(() => selectedPayment = val),
-                      ),
-                      gapLarge,
-                      DatePickerSection(
-                        key: ValueKey(selectedDate),
-                        selectedDate: selectedDate,
-                        onTap: () => pickDate(context),
-                      ),
-                      gapLarge,
-                      TimePickerSection(
-                        selectedHour: selectedHour,
-                        selectedMinute: selectedMinute,
-                        onHourChanged: (val) =>
-                            setState(() => selectedHour = val),
-                        onMinuteChanged: (val) =>
-                            setState(() => selectedMinute = val),
-                      ),
-                      gapXL,
-                      AppButton(
-                        text: 'Save',
-                        isLoading: buttonLoading,
-                        onPressed: submit,
-                      ),
-                      gapXL,
-                    ],
+                    ),
                   ),
-                ),
-              ),
+          );
+        },
       ),
     );
   }
+
+  void updateCalculations() {
+    double totalAmount = 0;
+
+    for (final st in selectedTreatmentsNotifier.value) {
+      final price = double.tryParse(st.treatment.price ?? '0') ?? 0;
+      final patientCount = st.maleCount + st.femaleCount;
+      totalAmount += price * patientCount;
+    }
+
+    totalAmountController.text = totalAmount.toStringAsFixed(0);
+    updateBalance();
+    selectedTreatmentsNotifier.value = List.from(
+      selectedTreatmentsNotifier.value,
+    );
+  }
+
+  void updateBalance() {
+    final total = double.tryParse(totalAmountController.text) ?? 0;
+    final discount = double.tryParse(discountAmountController.text) ?? 0;
+    final advance = double.tryParse(advanceAmountController.text) ?? 0;
+
+    final balance = total - discount - advance;
+    balanceAmountController.text = balance.toStringAsFixed(0);
+  }
+}
+
+class SelectedTreatment {
+  Treatment treatment;
+  int maleCount;
+  int femaleCount;
+
+  SelectedTreatment({
+    required this.treatment,
+    this.maleCount = 1,
+    this.femaleCount = 0,
+  });
 }

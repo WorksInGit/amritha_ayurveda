@@ -1,7 +1,7 @@
-import 'package:amritha_ayurveda/constants.dart';
 import 'package:amritha_ayurveda/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
+import '../../../core/constants.dart';
 
 class AmountDetailsSection extends StatelessWidget {
   final TextEditingController totalAmountController;
@@ -26,9 +26,7 @@ class AmountDetailsSection extends StatelessWidget {
           hintText: '',
           controller: totalAmountController,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-          ],
+
           validator: (v) {
             if (v == null || v.trim().isEmpty) {
               return 'Total amount is required';
@@ -46,9 +44,7 @@ class AmountDetailsSection extends StatelessWidget {
           hintText: '',
           controller: discountAmountController,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-          ],
+
           validator: (v) {
             if (v == null || v.trim().isEmpty) {
               return 'Discount amount is required';
@@ -71,9 +67,7 @@ class AmountDetailsSection extends StatelessWidget {
           hintText: '',
           controller: advanceAmountController,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-          ],
+
           validator: (v) {
             if (v == null || v.trim().isEmpty) {
               return 'Advance amount is required';
@@ -91,9 +85,7 @@ class AmountDetailsSection extends StatelessWidget {
           hintText: '',
           controller: balanceAmountController,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-          ],
+
           validator: (v) {
             if (v == null || v.trim().isEmpty) {
               return 'Balance amount is required';

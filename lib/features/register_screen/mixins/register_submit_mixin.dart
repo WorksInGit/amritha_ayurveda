@@ -3,59 +3,60 @@ import 'package:amritha_ayurveda/mixins/form_validator_mixin.dart';
 import 'package:amritha_ayurveda/services/receipt_pdf_generator.dart';
 import 'package:amritha_ayurveda/services/snackbar_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
 
+import '../../../core/extenstion.dart';
 import 'register_data_mixin.dart';
 
-/// Mixin that handles the form submission logic, validation checks,
-/// API call, and PDF receipt generation.
 mixin RegisterSubmitMixin<T extends StatefulWidget>
     on State<T>, RegisterDataMixin<T>, FormValidatorMixin<T> {
   Future<void> submit() async {
     if (!validate()) return;
 
-    if (selectedBranch == null) {
+    if (selectedBranchNotifier.value == null) {
       showErrorMessage('Please select a branch');
       return;
     }
-    if (selectedTreatments.isEmpty) {
+    if (selectedTreatmentsNotifier.value.isEmpty) {
       showErrorMessage('Please add at least one treatment');
       return;
     }
-    if (selectedDate == null) {
+    if (selectedDateNotifier.value == null) {
       showErrorMessage('Please select a treatment date');
       return;
     }
-    if (selectedHour == null || selectedMinute == null) {
+    if (selectedHourNotifier.value == null ||
+        selectedMinuteNotifier.value == null) {
       showErrorMessage('Please select treatment time');
+      return;
+    }
+    if (selectedPaymentNotifier.value.isEmpty) {
+      showErrorMessage('Please select a payment option');
       return;
     }
 
     makeButtonLoading();
 
     try {
-      // Format date and time: "01/02/2024-10:24 AM"
-      final hour12 = selectedHour! > 12 ? selectedHour! - 12 : selectedHour!;
-      final amPm = selectedHour! >= 12 ? 'PM' : 'AM';
-      final dateStr = DateFormat('dd/MM/yyyy').format(selectedDate!);
+      final h = selectedHourNotifier.value!;
+      final hour12 = h == 0 ? 12 : (h > 12 ? h - 12 : h);
+      final amPm = h >= 12 ? 'PM' : 'AM';
+
+      final dateStr = selectedDateNotifier.value.dayMonthYear;
       final timeStr =
-          '${hour12.toString().padLeft(2, '0')}:${selectedMinute!.toString().padLeft(2, '0')} $amPm';
+          '${hour12.toString().padLeft(2, '0')}:${selectedMinuteNotifier.value!.toString().padLeft(2, '0')} $amPm';
       final dateAndTime = '$dateStr-$timeStr';
 
-      // Build comma-separated treatment IDs
-      final treatmentIds = selectedTreatments
+      final treatmentIds = selectedTreatmentsNotifier.value
           .map((st) => st.treatment.id.toString())
           .join(',');
 
-      // Build comma-separated male treatment IDs
-      final maleIds = selectedTreatments
+      final maleIds = selectedTreatmentsNotifier.value
           .where((st) => st.maleCount > 0)
           .map((st) => st.treatment.id.toString())
           .join(',');
 
-      // Build comma-separated female treatment IDs
-      final femaleIds = selectedTreatments
+      final femaleIds = selectedTreatmentsNotifier.value
           .where((st) => st.femaleCount > 0)
           .map((st) => st.treatment.id.toString())
           .join(',');
@@ -63,7 +64,7 @@ mixin RegisterSubmitMixin<T extends StatefulWidget>
       await DataRepository.i.registerPatient(
         name: nameController.text.trim(),
         excecutive: '',
-        payment: selectedPayment,
+        payment: selectedPaymentNotifier.value,
         phone: phoneController.text.trim(),
         address: addressController.text.trim(),
         totalAmount: totalAmountController.text.trim(),
@@ -74,33 +75,32 @@ mixin RegisterSubmitMixin<T extends StatefulWidget>
         id: '',
         male: maleIds,
         female: femaleIds,
-        branch: selectedBranch!.id.toString(),
+        branch: selectedBranchNotifier.value!.id.toString(),
         treatments: treatmentIds,
       );
 
       if (mounted) {
-        // Generate PDF receipt
         final now = DateTime.now();
-        final bookedOnDate = DateFormat('dd/MM/yyyy').format(now);
-        final bookedOnTime = DateFormat('hh:mma').format(now).toLowerCase();
+        final bookedOnDate = now.dayMonthYear;
+        final bookedOnTime = now.time?.toLowerCase();
 
         final receiptData = ReceiptData(
           patientName: nameController.text.trim(),
           address: addressController.text.trim().isNotEmpty
-              ? '${addressController.text.trim()}, ${selectedLocation ?? ''}'
-              : selectedLocation ?? '',
+              ? '${addressController.text.trim()}, ${selectedLocationNotifier.value ?? ''}'
+              : selectedLocationNotifier.value ?? 'N/A',
           whatsappNumber: '+91 ${phoneController.text.trim()}',
-          bookedOnDate: bookedOnDate,
-          bookedOnTime: bookedOnTime,
-          treatmentDate: dateStr,
+          bookedOnDate: bookedOnDate ?? "N/A",
+          bookedOnTime: bookedOnTime ?? "N/A",
+          treatmentDate: dateStr ?? "N/A",
           treatmentTime: timeStr.toLowerCase(),
-          branch: selectedBranch!,
-          treatments: selectedTreatments.map((st) {
-            final price = double.tryParse(st.treatment.price) ?? 0;
+          branch: selectedBranchNotifier.value!,
+          treatments: selectedTreatmentsNotifier.value.map((st) {
+            final price = double.tryParse(st.treatment.price ?? '0') ?? 0;
             final total = price * (st.maleCount + st.femaleCount);
             return ReceiptTreatmentItem(
-              name: st.treatment.name,
-              price: st.treatment.price,
+              name: st.treatment.name ?? 'N/A',
+              price: st.treatment.price ?? '0',
               maleCount: st.maleCount,
               femaleCount: st.femaleCount,
               total: total.toStringAsFixed(0),
@@ -123,7 +123,7 @@ mixin RegisterSubmitMixin<T extends StatefulWidget>
 
         if (mounted) {
           showSuccessMessage('Patient registered successfully');
-          Navigator.pop(context, true);
+          // Navigator.pop(context, true);
         }
       }
     } catch (e) {

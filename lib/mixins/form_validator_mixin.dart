@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../constants.dart';
 
 mixin FormValidatorMixin<T extends StatefulWidget> on State<T> {
   bool buttonLoading = false;
@@ -34,50 +33,44 @@ mixin FormValidatorMixin<T extends StatefulWidget> on State<T> {
   GlobalKey<FormState>? formKey;
   bool validate() {
     if (formKey == null) return false;
-    bool valid = false;
     if (!formKey!.currentState!.validate()) {
-    } else {
-      valid = true;
+      scrollToFirstError();
+      return false;
     }
-    if (!valid) {
-      scrollToTop();
-    }
-    return valid;
+    return true;
   }
 
-  void tougleScroll() {
-    if (!formScrollController.hasClients) return;
-    if (atBottom()) {
-      scrollToTop();
-    } else {
-      scrollToBottom();
+  void scrollToFirstError() {
+    final context = formKey?.currentContext;
+    if (context == null) return;
+
+    FormFieldState? firstError;
+
+    void findError(Element element) {
+      if (firstError != null) return;
+
+      if (element.widget is FormField) {
+        final StatefulElement statefulElement = element as StatefulElement;
+        final FormFieldState state = statefulElement.state as FormFieldState;
+
+        if (state.hasError) {
+          firstError = state;
+          return;
+        }
+      }
+
+      element.visitChildren(findError);
     }
-  }
 
-  bool atBottom() {
-    if (!formScrollController.hasClients) return false;
-    if (formScrollController.position.pixels ==
-        formScrollController.position.maxScrollExtent) {
-      return true;
+    context.visitChildElements(findError);
+
+    if (firstError != null && firstError!.mounted) {
+      Scrollable.ensureVisible(
+        firstError!.context,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.fastOutSlowIn,
+        alignment: 0.1,
+      );
     }
-    return false;
-  }
-
-  void scrollToTop() {
-    if (!formScrollController.hasClients) return;
-    formScrollController.animateTo(
-      0,
-      duration: animationDuration,
-      curve: Curves.fastOutSlowIn,
-    );
-  }
-
-  void scrollToBottom() {
-    if (!formScrollController.hasClients) return;
-    formScrollController.animateTo(
-      formScrollController.position.maxScrollExtent,
-      duration: animationDuration,
-      curve: Curves.fastOutSlowIn,
-    );
   }
 }

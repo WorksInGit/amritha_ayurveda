@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../constants.dart';
+import '../core/constants.dart';
 
 TextStyle baseStyle = const TextStyle(
   fontSize: 14,
@@ -13,13 +13,9 @@ TextStyle baseStyle = const TextStyle(
 );
 
 final hintStyle = baseStyle.copyWith(
-  fontWeight: FontWeight.w400,
-  fontSize: 13.5.fSize,
-  color: const Color(0xff868686),
-);
-
-const inputborder = UnderlineInputBorder(
-  borderSide: BorderSide(color: Color(0xffDBDBDB)),
+  fontWeight: FontWeight.w300,
+  fontSize: 14.fSize,
+  color: Colors.black.withValues(alpha: 0.4),
 );
 
 ThemeData get themeData => ThemeData(
@@ -86,108 +82,96 @@ ThemeData get themeData => ThemeData(
       fontWeight: FontWeight.w400,
     ),
   ),
-  dividerTheme: DividerThemeData(color: Color(0xffEEEEEE)),
+  dividerTheme: DividerThemeData(color: Colors.black.withValues(alpha: 0.2)),
   listTileTheme: ListTileThemeData(titleTextStyle: baseStyle.copyWith()),
   appBarTheme: AppBarTheme(
-    centerTitle: false,
-    scrolledUnderElevation: 0,
+    surfaceTintColor: Colors.transparent,
+    backgroundColor: Color(0xff006837),
+    centerTitle: true,
     titleTextStyle: baseStyle.copyWith(
       fontWeight: FontWeight.w700,
       fontSize: 17.fSize,
-      color: Color(0xff3C3F4E),
+      color: Colors.white,
     ),
   ),
 
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      minimumSize: const Size(200, 54),
-      backgroundColor: primaryColor,
-      foregroundColor: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(padding),
-      ),
+      backgroundColor: const Color(0xFF006837),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      disabledBackgroundColor: const Color(0xFF006837).withValues(alpha: 0.6),
     ),
   ),
-
-  useMaterial3: true,
-  platform: TargetPlatform.iOS,
-  fontFamily: "Poppins",
-
-  primaryColor: const Color(0xff006837),
-  colorScheme: const ColorScheme.light(primary: Color(0xff006837)),
 
   inputDecorationTheme: InputDecorationTheme(
-    // Material 3 prefers outline with subtle radius
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(width: 1),
+    fillColor: Color(0x40D9D9D9),
+    focusColor: Color(0x40D9D9D9),
+    errorStyle: baseStyle.copyWith(color: Colors.red),
+    filled: true,
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(color: Color(0xFF006837)),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8),
+      borderSide: const BorderSide(color: Color(0xFFD9D9D9)),
     ),
     enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
+      borderRadius: BorderRadius.circular(8),
+      borderSide: BorderSide(color: Colors.black.withValues(alpha: 0.1)),
     ),
-    focusedBorder: const OutlineInputBorder(
-      borderRadius: BorderRadius.all(Radius.circular(12)),
-      borderSide: BorderSide(color: Color(0xff006837), width: 1.5),
+    hintStyle: baseStyle.copyWith(
+      fontWeight: FontWeight.w300,
+      fontSize: 14.fSize,
+      color: Colors.black.withValues(alpha: 0.4),
     ),
-    errorBorder: const OutlineInputBorder(
-      borderRadius: BorderRadius.all(Radius.circular(12)),
-      borderSide: BorderSide(color: Colors.red, width: 1),
+    contentPadding: EdgeInsets.symmetric(
+      horizontal: paddingLarge,
+      vertical: paddingLarge,
     ),
-    focusedErrorBorder: const OutlineInputBorder(
-      borderRadius: BorderRadius.all(Radius.circular(12)),
-      borderSide: BorderSide(color: Colors.red, width: 1.5),
-    ),
-
-    // Material 3 default spacing (do not keep zero)
-    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-
-    // Floating label behavior matches M3 spec
-    floatingLabelBehavior: FloatingLabelBehavior.auto,
-
-    // Hint style = lower emphasis than input text
-    hintStyle: TextStyle(
-      color: Colors.grey.shade500,
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
-    ),
-
-    // Label style (unfocused)
-    labelStyle: TextStyle(
-      color: Colors.grey.shade700,
-      fontSize: 14,
-      fontWeight: FontWeight.w500,
-    ),
-
-    // Focused label uses primary color
-    floatingLabelStyle: const TextStyle(
-      color: Color(0xff006837),
-      fontSize: 14,
-      fontWeight: FontWeight.w600,
-    ),
-
-    // Error text styling
-    errorStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-
-    // Helps achieve Material 3 filled-field feel if needed later
-    isDense: false,
-    alignLabelWithHint: true,
   ),
+  fontFamily: "Poppins",
+  useMaterial3: true,
+  platform: TargetPlatform.iOS,
+  primaryColor: Color(0xff006837),
+  colorScheme: const ColorScheme.light(primary: Color(0xff006837)),
 );
 
-// inputDecorationTheme: const InputDecorationTheme(
-//   border: inputborder,
-//   enabledBorder: inputborder,
-//   focusedBorder: inputborder,
-//   contentPadding: EdgeInsets.zero,
-// ),
-// fontFamily: "Poppins",
-// useMaterial3: true,
-// platform: TargetPlatform.iOS,
-// primaryColor: Color(0xff006837),
-// colorScheme: const ColorScheme.light(primary: Color(0xff006837)),
+extension BuildContextExtension on BuildContext {
+  TextStyle get poppins60024 =>
+      baseStyle.copyWith(fontSize: 24.fSize, fontWeight: FontWeight.w600);
 
-extension BuildContextExtension on BuildContext {}
+  TextStyle get poppins40016 =>
+      baseStyle.copyWith(fontSize: 16.fSize, fontWeight: FontWeight.w400);
+
+  TextStyle get poppins30014 =>
+      baseStyle.copyWith(fontSize: 14.fSize, fontWeight: FontWeight.w300);
+
+  TextStyle get poppins30012 =>
+      baseStyle.copyWith(fontSize: 12.fSize, fontWeight: FontWeight.w300);
+
+  TextStyle get poppins50012 =>
+      baseStyle.copyWith(fontSize: 12.fSize, fontWeight: FontWeight.w500);
+
+  TextStyle get poppins60017 =>
+      baseStyle.copyWith(fontSize: 17.fSize, fontWeight: FontWeight.w600);
+
+  TextStyle get poppins50018 =>
+      baseStyle.copyWith(fontSize: 18.fSize, fontWeight: FontWeight.w500);
+  TextStyle get poppins30016 =>
+      baseStyle.copyWith(fontSize: 16.fSize, fontWeight: FontWeight.w300);
+  TextStyle get poppins40015 =>
+      baseStyle.copyWith(fontSize: 15.fSize, fontWeight: FontWeight.w400);
+
+  TextStyle get poppins50016 =>
+      baseStyle.copyWith(fontSize: 16.fSize, fontWeight: FontWeight.w500);
+
+  TextStyle get poppins60018 =>
+      baseStyle.copyWith(fontSize: 18.fSize, fontWeight: FontWeight.w600);
+
+  TextStyle get poppins40014 =>
+      baseStyle.copyWith(fontSize: 14.fSize, fontWeight: FontWeight.w400);
+}
 
 void setSystemOverlay() {
   if (kIsWeb) return;

@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'package:amritha_ayurveda/core/app_route.dart';
+
 import 'package:amritha_ayurveda/core/repository.dart';
 
 import 'package:amritha_ayurveda/features/home_screen/widgets/patient_list_loading_widget.dart';
+import 'package:amritha_ayurveda/widgets/logout_bottom_sheet.dart';
 import 'package:amritha_ayurveda/features/register_screen/register_screen.dart';
 import 'package:amritha_ayurveda/models/patient_model.dart';
+import 'package:amritha_ayurveda/services/size_utils.dart';
+import 'package:amritha_ayurveda/widgets/app_button.dart';
 import 'package:amritha_ayurveda/widgets/network_resource.dart';
 import 'package:amritha_ayurveda/features/home_screen/widgets/patient_card.dart';
 import 'package:flutter/material.dart';
@@ -38,30 +42,41 @@ class _HomeScreenState extends State<HomeScreen> {
   void startSimulatedProgress() {
     progressTimer?.cancel();
     progressTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
-      if (downloadProgress < 0.9) {
-        if (mounted) {
-          setState(() {
-            downloadProgress += 0.05;
-          });
-        }
+      double increment = 0.0;
+      if (downloadProgress < 0.6) {
+        increment = 0.05;
+      } else if (downloadProgress < 0.85) {
+        increment = 0.01;
+      } else if (downloadProgress < 0.95) {
+        increment = 0.002;
       } else {
         timer.cancel();
+        return;
+      }
+
+      if (mounted) {
+        setState(() {
+          downloadProgress += increment;
+          if (downloadProgress > 0.99) {
+            downloadProgress = 0.99;
+          }
+        });
       }
     });
   }
 
   Future<void> getData() async {
     setState(() {
-      downloadProgress = 0.0;
+      downloadProgress = 0.05;
       startSimulatedProgress();
       patientListFuture = DataRepository.i.getPatientList(
         onReceiveProgress: (count, total) {
           if (total != -1) {
             progressTimer?.cancel();
-            final progress = count / total;
-            if (mounted) {
+            final realProgress = count / total;
+            if (mounted && realProgress > downloadProgress) {
               setState(() {
-                downloadProgress = progress;
+                downloadProgress = realProgress;
               });
             }
           }
@@ -81,18 +96,41 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Text(
-          'Amritha Ayurveda',
-          style: TextStyle(color: Colors.black),
-        ),
+        title: const Text('Amritha Ayurveda'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none, color: Colors.black),
-            onPressed: () {},
+          Visibility(
+            visible: downloadProgress == 1.0,
+            child: PopupMenuButton<String>(
+              icon: const Icon(Icons.more_horiz, color: Colors.white),
+              onSelected: (value) {
+                if (value == 'logout') {
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.white,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                    ),
+                    builder: (context) => const LogoutBottomSheet(),
+                  );
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'logout',
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout, color: Colors.black),
+                      SizedBox(width: 10),
+                      Text('Logout'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
-        elevation: 0,
       ),
       body: NetworkResource<List<Patient>>(
         patientListFuture,
@@ -107,12 +145,11 @@ class _HomeScreenState extends State<HomeScreen> {
               await getData();
             },
             child: ListView.builder(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
-              itemExtent: 175,
+              padding: EdgeInsets.all(20.w),
               itemCount: data.length,
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
+                  padding: EdgeInsets.only(bottom: 16.w),
                   child: PatientCard(patient: data[index], index: index + 1),
                 );
               },
@@ -123,31 +160,18 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: Visibility(
         visible: downloadProgress == 1.0,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 30.0),
+          padding: EdgeInsets.fromLTRB(16.0.w, 0, 16.0.w, 30.0.w),
           child: SizedBox(
             width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
+            height: 50.h,
+            child: AppButton(
+              text: 'Register Now',
               onPressed: () async {
                 final result = await navigate(context, RegisterScreen.path);
                 if (result == true) {
                   getData();
                 }
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF006837), // Theme Green
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text(
-                'Register Now',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
             ),
           ),
         ),

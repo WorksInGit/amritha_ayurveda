@@ -25,7 +25,6 @@ class AppRoute {
     switch (uri.path) {
       case SplashScreen.path:
         screen = const SplashScreen();
-        // return pageRoute(settings, screen, animate: false);
         break;
 
       case HomeScreen.path:
@@ -34,7 +33,7 @@ class AppRoute {
 
       case LoginScreen.path:
         screen = const LoginScreen();
-        return pageRoute(settings, screen);
+        return pageRoute(settings, screen, animate: false);
 
       case RegisterScreen.path:
         screen = const RegisterScreen();
