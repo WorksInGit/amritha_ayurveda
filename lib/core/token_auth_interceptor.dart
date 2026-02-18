@@ -1,7 +1,10 @@
 import 'dart:io';
 // ignore: depend_on_referenced_packages
 import 'package:dio/dio.dart';
+import '../features/login_screen/login_screen.dart';
+import '../main.dart';
 import '../services/shared_preferences_services.dart';
+import 'app_route.dart';
 
 class TokenAuthInterceptor extends Interceptor {
   @override
@@ -42,8 +45,7 @@ class TokenAuthInterceptor extends Interceptor {
         }
 
         if (!requiresVerification) {
-          // TODO: Implement signOut
-          // signOut();
+          signOut();
         }
         break;
       case 403:
@@ -51,8 +53,7 @@ class TokenAuthInterceptor extends Interceptor {
         if (data is Map &&
             data['message'] ==
                 "You do not have permission to perform this action.") {
-          // TODO: Implement signOut
-          // signOut();
+          signOut();
         }
         break;
       default:
@@ -60,4 +61,10 @@ class TokenAuthInterceptor extends Interceptor {
     }
     super.onError(err, handler);
   }
+}
+
+Future<void> signOut() async {
+  await SharedPreferencesService.i.clear();
+
+  navigate(navigatorKey.currentContext!, LoginScreen.path, replace: true);
 }

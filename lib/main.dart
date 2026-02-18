@@ -31,7 +31,6 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return Sizer(
@@ -43,6 +42,7 @@ class _MyAppState extends State<MyApp> {
           ) {
             return ToastificationWrapper(
               child: MaterialApp(
+                theme: themeData,
                 navigatorKey: navigatorKey,
                 debugShowCheckedModeBanner: false,
                 onGenerateRoute: AppRoute.onGenerateRoute,
