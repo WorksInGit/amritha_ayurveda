@@ -97,6 +97,7 @@ ThemeData get themeData => ThemeData(
 
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
+      elevation: 0,
       backgroundColor: const Color(0xFF006837),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       disabledBackgroundColor: const Color(0xFF006837).withValues(alpha: 0.6),
@@ -171,6 +172,18 @@ extension BuildContextExtension on BuildContext {
 
   TextStyle get poppins40014 =>
       baseStyle.copyWith(fontSize: 14.fSize, fontWeight: FontWeight.w400);
+
+  TextStyle get poppins60014 =>
+      baseStyle.copyWith(fontSize: 14.fSize, fontWeight: FontWeight.w600);
+
+  TextStyle get poppins40012 =>
+      baseStyle.copyWith(fontSize: 12.fSize, fontWeight: FontWeight.w400);
+
+  TextStyle get poppins60016 =>
+      baseStyle.copyWith(fontSize: 16.fSize, fontWeight: FontWeight.w600);
+
+  TextStyle get poppins50014 =>
+      baseStyle.copyWith(fontSize: 14.fSize, fontWeight: FontWeight.w500);
 }
 
 void setSystemOverlay() {

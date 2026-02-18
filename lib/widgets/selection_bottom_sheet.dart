@@ -1,5 +1,6 @@
 import 'package:amritha_ayurveda/core/constants.dart';
 import 'package:amritha_ayurveda/services/size_utils.dart';
+import 'package:amritha_ayurveda/theme/theme.dart';
 import 'package:amritha_ayurveda/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -65,15 +66,11 @@ class _SelectionBottomSheetState<T> extends State<SelectionBottomSheet<T>> {
             children: [
               Text(
                 widget.title,
-                style: TextStyle(
-                  fontSize: 18.fSize,
-                  fontWeight: FontWeight.w600,
-                  color: appBlackColor,
-                ),
+                style: context.poppins60018.copyWith(color: appBlackColor),
               ),
               IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close),
+                icon: Icon(Icons.close, size: 24.r),
               ),
             ],
           ),
@@ -83,7 +80,7 @@ class _SelectionBottomSheetState<T> extends State<SelectionBottomSheet<T>> {
             hintText: 'Search...',
             controller: _searchController,
             onChanged: _filter,
-            prefixIcon: const Icon(Icons.search),
+            prefixIcon: Icon(Icons.search, size: 24.r),
           ),
           Gap(20.w),
           Expanded(
@@ -97,8 +94,7 @@ class _SelectionBottomSheetState<T> extends State<SelectionBottomSheet<T>> {
                   contentPadding: EdgeInsets.zero,
                   title: Text(
                     widget.displayText(item),
-                    style: TextStyle(
-                      fontSize: 16.fSize,
+                    style: context.poppins60016.copyWith(
                       fontWeight: isSelected
                           ? FontWeight.w600
                           : FontWeight.w400,
@@ -106,7 +102,11 @@ class _SelectionBottomSheetState<T> extends State<SelectionBottomSheet<T>> {
                     ),
                   ),
                   trailing: isSelected
-                      ? const Icon(Icons.check_circle, color: primaryColor)
+                      ? Icon(
+                          Icons.check_circle,
+                          color: primaryColor,
+                          size: 24.r,
+                        )
                       : null,
                   onTap: () => Navigator.pop(context, item),
                 );

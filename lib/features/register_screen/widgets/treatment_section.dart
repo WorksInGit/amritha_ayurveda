@@ -65,7 +65,6 @@ class TreatmentSection extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor.withValues(alpha: 0.15),
                   foregroundColor: primaryColor,
-                  elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -80,13 +79,7 @@ class TreatmentSection extends StatelessWidget {
                           color: primaryColor,
                         ),
                       )
-                    : Text(
-                        '+ Add Treatments',
-                        style: TextStyle(
-                          fontSize: 14.fSize,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                    : Text('+ Add Treatments', style: context.poppins60014),
               );
             },
           ),
@@ -231,14 +224,11 @@ class _AddTreatmentSheetState extends State<AddTreatmentSheet> {
           Gap(20.w),
           Row(
             children: [
-              Text(
-                'Choose Treatment',
-                style: context.poppins50018.copyWith(fontSize: 18.fSize),
-              ),
+              Text('Choose Treatment', style: context.poppins50018),
               const Spacer(),
               GestureDetector(
                 onTap: () => Navigator.pop(context),
-                child: const Icon(Icons.close),
+                child: Icon(Icons.close, size: 24.r),
               ),
             ],
           ),

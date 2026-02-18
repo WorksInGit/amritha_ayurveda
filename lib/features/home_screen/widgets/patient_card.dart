@@ -85,8 +85,7 @@ class PatientCard extends StatelessWidget {
                       if (patient.user?.isNotEmpty ?? false)
                         Text(
                           "${patient.user![0].toUpperCase()}${patient.user!.substring(1)}",
-                          style: TextStyle(
-                            fontSize: 12.fSize,
+                          style: context.poppins40012.copyWith(
                             color: Colors.grey,
                           ),
                         ),
@@ -105,10 +104,7 @@ class PatientCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'View Booking details',
-                  style: TextStyle(fontSize: 14.fSize, color: Colors.black),
-                ),
+                Text('View Booking details', style: context.poppins40014),
                 Icon(
                   Icons.arrow_forward_ios,
                   size: 20.r,

@@ -13,6 +13,8 @@ import 'package:amritha_ayurveda/widgets/network_resource.dart';
 import 'package:amritha_ayurveda/features/home_screen/widgets/patient_card.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/constants.dart';
+
 class HomeScreen extends StatefulWidget {
   static const String path = "/home-screen";
 
@@ -122,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     children: [
                       Icon(Icons.logout, color: Colors.black),
-                      SizedBox(width: 10),
+                      gap,
                       Text('Logout'),
                     ],
                   ),

@@ -77,9 +77,8 @@ class DatePickerSection extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 5, left: 5),
                         child: Text(
                           formFieldState.errorText ?? '',
-                          style: TextStyle(
+                          style: context.poppins40012.copyWith(
                             color: Colors.red,
-                            fontSize: 12.fSize,
                           ),
                         ),
                       ),

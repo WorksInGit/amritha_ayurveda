@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:amritha_ayurveda/widgets/app_text_field.dart';
 import 'package:amritha_ayurveda/widgets/selection_bottom_sheet.dart';
 
+import '../services/size_utils.dart';
+
 class AppDropdownField<T> extends StatefulWidget {
   final String label;
   final String hintText;
@@ -86,7 +88,8 @@ class _AppDropdownFieldState<T> extends State<AppDropdownField<T>> {
       readOnly: true,
       onTap: widget.enabled ? _showBottomSheet : null,
       validator: (_) => widget.validator?.call(widget.value),
-      suffixIcon: const Icon(
+      suffixIcon: Icon(
+        size: 24.r,
         Icons.keyboard_arrow_down,
         color: Color(0xFF006837),
       ),
