@@ -1,5 +1,4 @@
 import 'package:amritha_ayurveda/core/constants.dart';
-import 'package:amritha_ayurveda/services/size_utils.dart';
 import 'package:amritha_ayurveda/theme/theme.dart';
 import 'package:amritha_ayurveda/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
@@ -60,11 +59,7 @@ class PaymentDetailsSection extends StatelessWidget {
 
         Text(
           'Payment Option',
-          style: TextStyle(
-            fontSize: 14.fSize,
-            fontWeight: FontWeight.w500,
-            color: const Color(0xFF333333),
-          ),
+          style: context.poppins50014.copyWith(color: const Color(0xFF333333)),
         ),
         gap,
         ValueListenableBuilder<String>(
@@ -110,10 +105,7 @@ class PaymentDetailsSection extends StatelessWidget {
                                         MaterialTapTargetSize.shrinkWrap,
                                     visualDensity: VisualDensity.compact,
                                   ),
-                                  Text(
-                                    option,
-                                    style: TextStyle(fontSize: 14.fSize),
-                                  ),
+                                  Text(option, style: context.poppins40014),
                                 ],
                               ),
                             ),

@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 
 import '../../../core/constants.dart';
 import '../../../services/size_utils.dart';
+import '../../../theme/theme.dart';
 
 class PatientListLoadingWidget extends StatelessWidget {
   final double progress;
@@ -31,9 +32,7 @@ class PatientListLoadingWidget extends StatelessWidget {
                   ),
                   Text(
                     '${(progress * 100).toInt()}%',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.fSize,
+                    style: context.poppins60018.copyWith(
                       color: Color(0xFF006837),
                     ),
                   ),
@@ -44,21 +43,17 @@ class PatientListLoadingWidget extends StatelessWidget {
               .fadeIn(duration: 400.ms),
           Gap(24.w),
 
-          const Text(
+          Text(
                 'Loading Patients...',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey,
-                ),
+                style: context.poppins50016.copyWith(color: Colors.grey),
               )
               .animate()
               .fadeIn(delay: 200.ms)
               .slideY(begin: 0.2, end: 0, duration: 400.ms),
           gap,
-          const Text(
+          Text(
             'Please wait while we fetch the data',
-            style: TextStyle(fontSize: 12, color: Colors.grey),
+            style: context.poppins40012.copyWith(color: Colors.grey),
           ).animate().fadeIn(delay: 400.ms),
         ],
       ),

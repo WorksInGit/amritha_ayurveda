@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../../core/constants.dart';
 import '../../../services/size_utils.dart';
+import '../../../theme/theme.dart';
 
 class CountChip extends StatelessWidget {
   final String label;
@@ -20,21 +21,15 @@ class CountChip extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          label,
-          style: TextStyle(fontSize: 12.fSize, color: color),
-        ),
+        Text(label, style: context.poppins40012.copyWith(color: color)),
         gapSmall,
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.w),
           decoration: BoxDecoration(
             border: Border.all(color: color.withValues(alpha: 0.3)),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(4.r),
           ),
-          child: Text(
-            count.toString(),
-            style: TextStyle(fontSize: 12.fSize, color: color),
-          ),
+          child: Text(count.toString(), style: context.poppins40012),
         ),
       ],
     );

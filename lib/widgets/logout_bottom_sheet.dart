@@ -21,7 +21,7 @@ class LogoutBottomSheet extends StatelessWidget {
               const Spacer(),
               InkWell(
                 onTap: () => Navigator.pop(context),
-                child: const Icon(Icons.close),
+                child: Icon(Icons.close, size: 24.r),
               ),
             ],
           ),
