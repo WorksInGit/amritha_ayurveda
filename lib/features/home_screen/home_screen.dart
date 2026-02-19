@@ -6,7 +6,7 @@ import 'package:amritha_ayurveda/core/repository.dart';
 import 'package:amritha_ayurveda/features/home_screen/widgets/patient_list_loading_widget.dart';
 import 'package:amritha_ayurveda/widgets/logout_bottom_sheet.dart';
 import 'package:amritha_ayurveda/features/register_screen/register_screen.dart';
-import 'package:amritha_ayurveda/models/patient_model.dart';
+import 'package:amritha_ayurveda/features/register_screen/models/patient_model.dart';
 import 'package:amritha_ayurveda/services/size_utils.dart';
 import 'package:amritha_ayurveda/widgets/app_button.dart';
 import 'package:amritha_ayurveda/widgets/network_resource.dart';
@@ -25,8 +25,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Future<List<Patient>>? patientListFuture;
-  double downloadProgress = 0.0;
+  final ValueNotifier<Future<List<Patient>>?> patientListFutureNotifier =
+      ValueNotifier(null);
+  final ValueNotifier<double> downloadProgressNotifier = ValueNotifier(0.0);
   Timer? progressTimer;
 
   @override
@@ -38,6 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     progressTimer?.cancel();
+    patientListFutureNotifier.dispose();
+    downloadProgressNotifier.dispose();
     super.dispose();
   }
 
@@ -45,11 +48,12 @@ class _HomeScreenState extends State<HomeScreen> {
     progressTimer?.cancel();
     progressTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       double increment = 0.0;
-      if (downloadProgress < 0.6) {
+      final currentProgress = downloadProgressNotifier.value;
+      if (currentProgress < 0.6) {
         increment = 0.05;
-      } else if (downloadProgress < 0.85) {
+      } else if (currentProgress < 0.85) {
         increment = 0.01;
-      } else if (downloadProgress < 0.95) {
+      } else if (currentProgress < 0.95) {
         increment = 0.002;
       } else {
         timer.cancel();
@@ -57,40 +61,35 @@ class _HomeScreenState extends State<HomeScreen> {
       }
 
       if (mounted) {
-        setState(() {
-          downloadProgress += increment;
-          if (downloadProgress > 0.99) {
-            downloadProgress = 0.99;
-          }
-        });
+        double newValue = currentProgress + increment;
+        if (newValue > 0.99) {
+          newValue = 0.99;
+        }
+        downloadProgressNotifier.value = newValue;
       }
     });
   }
 
   Future<void> getData() async {
-    setState(() {
-      downloadProgress = 0.05;
-      startSimulatedProgress();
-      patientListFuture = DataRepository.i.getPatientList(
-        onReceiveProgress: (count, total) {
-          if (total != -1) {
-            progressTimer?.cancel();
-            final realProgress = count / total;
-            if (mounted && realProgress > downloadProgress) {
-              setState(() {
-                downloadProgress = realProgress;
-              });
-            }
+    downloadProgressNotifier.value = 0.05;
+    startSimulatedProgress();
+    final future = DataRepository.i.getPatientList(
+      onReceiveProgress: (count, total) {
+        if (total != -1) {
+          progressTimer?.cancel();
+          final realProgress = count / total;
+          if (mounted && realProgress > downloadProgressNotifier.value) {
+            downloadProgressNotifier.value = realProgress;
           }
-        },
-      );
-    });
-    await patientListFuture;
+        }
+      },
+    );
+    patientListFutureNotifier.value = future;
+
+    await future;
     progressTimer?.cancel();
     if (mounted) {
-      setState(() {
-        downloadProgress = 1.0;
-      });
+      downloadProgressNotifier.value = 1.0;
     }
   }
 
@@ -100,83 +99,106 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Amritha Ayurveda'),
         actions: [
-          Visibility(
-            visible: downloadProgress == 1.0,
-            child: PopupMenuButton<String>(
-              icon: const Icon(Icons.more_horiz, color: Colors.white),
-              onSelected: (value) {
-                if (value == 'logout') {
-                  showModalBottomSheet(
-                    context: context,
-                    backgroundColor: Colors.white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(20),
+          ValueListenableBuilder<double>(
+            valueListenable: downloadProgressNotifier,
+            builder: (context, progress, child) {
+              return Visibility(
+                visible: progress == 1.0,
+                child: PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_horiz, color: Colors.white),
+                  onSelected: (value) {
+                    if (value == 'logout') {
+                      showModalBottomSheet(
+                        context: context,
+                        backgroundColor: Colors.white,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                        ),
+                        builder: (context) => const LogoutBottomSheet(),
+                      );
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'logout',
+                      child: Row(
+                        children: [
+                          Icon(Icons.logout, color: Colors.black),
+                          gap,
+                          Text('Logout'),
+                        ],
                       ),
                     ),
-                    builder: (context) => const LogoutBottomSheet(),
-                  );
-                }
-              },
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'logout',
-                  child: Row(
-                    children: [
-                      Icon(Icons.logout, color: Colors.black),
-                      gap,
-                      Text('Logout'),
-                    ],
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            },
           ),
         ],
       ),
-      body: NetworkResource<List<Patient>>(
-        patientListFuture,
-        loading: PatientListLoadingWidget(progress: downloadProgress),
-        error: (error) => Center(child: Text('Error: $error')),
-        success: (data) {
-          if (data.isEmpty) {
-            return const Center(child: Text('No patients found'));
-          }
-          return RefreshIndicator(
-            onRefresh: () async {
-              await getData();
+      body: ValueListenableBuilder<Future<List<Patient>>?>(
+        valueListenable: patientListFutureNotifier,
+        builder: (context, patientListFuture, child) {
+          return ValueListenableBuilder<double>(
+            valueListenable: downloadProgressNotifier,
+            builder: (context, progress, child) {
+              return NetworkResource<List<Patient>>(
+                patientListFuture,
+                loading: PatientListLoadingWidget(progress: progress),
+                error: (error) => Center(child: Text('Error: $error')),
+                success: (data) {
+                  if (data.isEmpty) {
+                    return const Center(child: Text('No patients found'));
+                  }
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      await getData();
+                    },
+                    child: ListView.builder(
+                      padding: EdgeInsets.all(20.w),
+                      itemCount: data.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 16.w),
+                          child: PatientCard(
+                            patient: data[index],
+                            index: index + 1,
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              );
             },
-            child: ListView.builder(
-              padding: EdgeInsets.all(20.w),
-              itemCount: data.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: EdgeInsets.only(bottom: 16.w),
-                  child: PatientCard(patient: data[index], index: index + 1),
-                );
-              },
-            ),
           );
         },
       ),
-      bottomNavigationBar: Visibility(
-        visible: downloadProgress == 1.0,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(16.0.w, 0, 16.0.w, 30.0.w),
-          child: SizedBox(
-            width: double.infinity,
-            height: 50.h,
-            child: AppButton(
-              text: 'Register Now',
-              onPressed: () async {
-                final result = await navigate(context, RegisterScreen.path);
-                if (result == true) {
-                  getData();
-                }
-              },
+      bottomNavigationBar: ValueListenableBuilder<double>(
+        valueListenable: downloadProgressNotifier,
+        builder: (context, progress, child) {
+          return Visibility(
+            visible: progress == 1.0,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(16.0.w, 0, 16.0.w, 30.0.w),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50.h,
+                child: AppButton(
+                  text: 'Register Now',
+                  onPressed: () async {
+                    final result = await navigate(context, RegisterScreen.path);
+                    if (result == true) {
+                      getData();
+                    }
+                  },
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

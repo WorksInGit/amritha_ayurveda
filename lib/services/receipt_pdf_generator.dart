@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:amritha_ayurveda/models/branch_model.dart';
+import 'package:amritha_ayurveda/features/register_screen/models/branch_model.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
@@ -137,7 +137,7 @@ class ReceiptPdfGenerator {
                           crossAxisAlignment: pw.CrossAxisAlignment.end,
                           children: [
                             pw.Text(
-                              data.branch.name.toUpperCase(),
+                              data.branch.name?.toUpperCase() ?? "N/A",
                               style: pw.TextStyle(
                                 font: bold,
                                 fontSize: 14,
@@ -146,7 +146,7 @@ class ReceiptPdfGenerator {
                             ),
                             pw.SizedBox(height: 4),
                             pw.Text(
-                              data.branch.address,
+                              data.branch.address ?? "N/A",
                               style: pw.TextStyle(
                                 font: regular,
                                 fontSize: 8,
@@ -171,7 +171,7 @@ class ReceiptPdfGenerator {
                                 color: grey,
                               ),
                             ),
-                            if (data.branch.gst.isNotEmpty) ...[
+                            if (data.branch.gst?.isNotEmpty ?? false) ...[
                               pw.SizedBox(height: 2),
                               pw.Text(
                                 'GST No: ${data.branch.gst}',
