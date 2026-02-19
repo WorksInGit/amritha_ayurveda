@@ -1,5 +1,5 @@
 import 'package:amritha_ayurveda/core/constants.dart';
-import 'package:amritha_ayurveda/models/patient_model.dart';
+import 'package:amritha_ayurveda/features/register_screen/models/patient_model.dart';
 import 'package:flutter/material.dart';
 import 'package:amritha_ayurveda/services/size_utils.dart';
 import 'package:gap/gap.dart';

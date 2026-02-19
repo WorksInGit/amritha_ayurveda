@@ -1,37 +1,20 @@
 import 'package:amritha_ayurveda/core/repository.dart';
+import 'package:amritha_ayurveda/features/register_screen/models/register_patient_model.dart';
 import 'package:amritha_ayurveda/mixins/form_validator_mixin.dart';
 import 'package:amritha_ayurveda/services/receipt_pdf_generator.dart';
 import 'package:amritha_ayurveda/services/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
-
 import '../../../core/extenstion.dart';
 import 'register_data_mixin.dart';
+import 'package:amritha_ayurveda/features/register_screen/models/branch_model.dart';
 
 mixin RegisterSubmitMixin<T extends StatefulWidget>
     on State<T>, RegisterDataMixin<T>, FormValidatorMixin<T> {
   Future<void> submit() async {
     if (!validate()) return;
-
-    if (selectedBranchNotifier.value == null) {
-      showErrorMessage('Please select a branch');
-      return;
-    }
     if (selectedTreatmentsNotifier.value.isEmpty) {
       showErrorMessage('Please add at least one treatment');
-      return;
-    }
-    if (selectedDateNotifier.value == null) {
-      showErrorMessage('Please select a treatment date');
-      return;
-    }
-    if (selectedHourNotifier.value == null ||
-        selectedMinuteNotifier.value == null) {
-      showErrorMessage('Please select treatment time');
-      return;
-    }
-    if (selectedPaymentNotifier.value.isEmpty) {
-      showErrorMessage('Please select a payment option');
       return;
     }
 
@@ -61,7 +44,7 @@ mixin RegisterSubmitMixin<T extends StatefulWidget>
           .map((st) => st.treatment.id.toString())
           .join(',');
 
-      await DataRepository.i.registerPatient(
+      final patient = RegisterPatientModel(
         name: nameController.text.trim(),
         excecutive: '',
         payment: selectedPaymentNotifier.value,
@@ -78,6 +61,8 @@ mixin RegisterSubmitMixin<T extends StatefulWidget>
         branch: selectedBranchNotifier.value!.id.toString(),
         treatments: treatmentIds,
       );
+
+      await DataRepository.i.registerPatient(patient);
 
       if (mounted) {
         final now = DateTime.now();
@@ -123,7 +108,7 @@ mixin RegisterSubmitMixin<T extends StatefulWidget>
 
         if (mounted) {
           showSuccessMessage('Patient registered successfully');
-          // Navigator.pop(context, true);
+          Navigator.pop(context, true);
         }
       }
     } catch (e) {
@@ -131,5 +116,114 @@ mixin RegisterSubmitMixin<T extends StatefulWidget>
     } finally {
       if (mounted) makeButtonNotLoading();
     }
+  }
+
+  String? nameValidator(String? v) {
+    if (v == null || v.trim().isEmpty) {
+      return 'Name is required';
+    }
+    if (v.trim().length < 3) {
+      return 'Name must be at least 3 characters';
+    }
+    if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(v.trim())) {
+      return 'Name should contain only letters';
+    }
+    return null;
+  }
+
+  String? phoneValidator(String? v) {
+    if (v == null || v.trim().isEmpty) {
+      return 'WhatsApp number is required';
+    }
+    final digits = v.trim().replaceAll(RegExp(r'[^0-9]'), '');
+    if (digits.length != 10) {
+      return 'Enter a valid 10-digit phone number';
+    }
+    return null;
+  }
+
+  String? addressValidator(String? v) {
+    if (v == null || v.trim().isEmpty) {
+      return 'Address is required';
+    }
+    return null;
+  }
+
+  String? locationValidator(String? val) =>
+      val == null || val.isEmpty ? 'Location is required' : null;
+
+  String? branchValidator(Branch? val) =>
+      val == null ? 'Branch is required' : null;
+
+  String? totalAmountValidator(String? v) {
+    if (v == null || v.trim().isEmpty) {
+      return 'Total amount is required';
+    }
+    final amount = double.tryParse(v.trim());
+    if (amount == null || amount < 0) {
+      return 'Enter a valid amount';
+    }
+    return null;
+  }
+
+  String? discountAmountValidator(String? v) {
+    if (v == null || v.trim().isEmpty) {
+      return 'Discount amount is required';
+    }
+    final discount = double.tryParse(v.trim());
+    if (discount == null || discount < 0) {
+      return 'Enter a valid amount';
+    }
+    final total = double.tryParse(totalAmountController.text.trim()) ?? 0;
+    if (discount > total) {
+      return 'Discount cannot exceed total amount';
+    }
+    return null;
+  }
+
+  String? paymentOptionValidator(String? val) {
+    if (val == null || val.isEmpty) {
+      return 'Please select a payment option';
+    }
+    return null;
+  }
+
+  String? advanceAmountValidator(String? v) {
+    if (v == null || v.trim().isEmpty) {
+      return 'Advance amount is required';
+    }
+    final amount = double.tryParse(v.trim());
+    if (amount == null || amount < 0) {
+      return 'Enter a valid amount';
+    }
+    return null;
+  }
+
+  String? balanceAmountValidator(String? v) {
+    if (v == null || v.trim().isEmpty) {
+      return 'Balance amount is required';
+    }
+    final amount = double.tryParse(v.trim());
+    if (amount == null || amount < 0) {
+      return 'Enter a valid amount';
+    }
+    return null;
+  }
+
+  String? dateValidator(DateTime? val) {
+    if (val == null) {
+      return 'Please select a treatment date';
+    }
+    return null;
+  }
+
+  String? hourValidator(int? val) {
+    if (val == null) return 'Required';
+    return null;
+  }
+
+  String? minuteValidator(int? val) {
+    if (val == null) return 'Required';
+    return null;
   }
 }

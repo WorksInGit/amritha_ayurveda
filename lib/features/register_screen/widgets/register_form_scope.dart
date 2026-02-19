@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import '../register_screen.dart';
 
 class RegisterFormScope extends InheritedWidget {
-  final RegisterScreenState state;
-
   const RegisterFormScope({
     super.key,
     required this.state,
     required super.child,
   });
+
+  final RegisterScreenState state;
 
   static RegisterScreenState of(BuildContext context) {
     final RegisterFormScope? result = context

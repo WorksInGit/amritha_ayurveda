@@ -1,5 +1,5 @@
 import 'package:amritha_ayurveda/core/constants.dart';
-import 'package:amritha_ayurveda/models/treatment_model.dart';
+import 'package:amritha_ayurveda/features/register_screen/models/treatment_model.dart';
 import 'package:amritha_ayurveda/services/size_utils.dart';
 import 'package:amritha_ayurveda/services/snackbar_utils.dart';
 import 'package:amritha_ayurveda/theme/theme.dart';

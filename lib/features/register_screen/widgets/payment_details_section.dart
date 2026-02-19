@@ -21,16 +21,7 @@ class PaymentDetailsSection extends StatelessWidget {
           controller: state.totalAmountController,
           keyboardType: TextInputType.number,
           readOnly: true,
-          validator: (v) {
-            if (v == null || v.trim().isEmpty) {
-              return 'Total amount is required';
-            }
-            final amount = double.tryParse(v.trim());
-            if (amount == null || amount < 0) {
-              return 'Enter a valid amount';
-            }
-            return null;
-          },
+          validator: state.totalAmountValidator,
         ),
         gapLarge,
         AppTextField(
@@ -39,21 +30,7 @@ class PaymentDetailsSection extends StatelessWidget {
           controller: state.discountAmountController,
           keyboardType: TextInputType.number,
           onChanged: (val) => state.updateBalance(),
-          validator: (v) {
-            if (v == null || v.trim().isEmpty) {
-              return 'Discount amount is required';
-            }
-            final discount = double.tryParse(v.trim());
-            if (discount == null || discount < 0) {
-              return 'Enter a valid amount';
-            }
-            final total =
-                double.tryParse(state.totalAmountController.text.trim()) ?? 0;
-            if (discount > total) {
-              return 'Discount cannot exceed total amount';
-            }
-            return null;
-          },
+          validator: state.discountAmountValidator,
         ),
         gapLarge,
 
@@ -68,12 +45,7 @@ class PaymentDetailsSection extends StatelessWidget {
             const options = ['Cash', 'Card', 'UPI'];
             return FormField<String>(
               initialValue: selectedPayment,
-              validator: (val) {
-                if (selectedPayment.isEmpty) {
-                  return 'Please select a payment option';
-                }
-                return null;
-              },
+              validator: state.paymentOptionValidator,
               builder: (formFieldState) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,16 +107,7 @@ class PaymentDetailsSection extends StatelessWidget {
           controller: state.advanceAmountController,
           keyboardType: TextInputType.number,
           onChanged: (val) => state.updateBalance(),
-          validator: (v) {
-            if (v == null || v.trim().isEmpty) {
-              return 'Advance amount is required';
-            }
-            final amount = double.tryParse(v.trim());
-            if (amount == null || amount < 0) {
-              return 'Enter a valid amount';
-            }
-            return null;
-          },
+          validator: state.advanceAmountValidator,
         ),
         gapLarge,
         AppTextField(
@@ -153,16 +116,7 @@ class PaymentDetailsSection extends StatelessWidget {
           controller: state.balanceAmountController,
           keyboardType: TextInputType.number,
           readOnly: true,
-          validator: (v) {
-            if (v == null || v.trim().isEmpty) {
-              return 'Balance amount is required';
-            }
-            final amount = double.tryParse(v.trim());
-            if (amount == null || amount < 0) {
-              return 'Enter a valid amount';
-            }
-            return null;
-          },
+          validator: state.balanceAmountValidator,
         ),
       ],
     );
