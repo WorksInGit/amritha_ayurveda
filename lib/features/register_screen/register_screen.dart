@@ -1,6 +1,6 @@
 import 'package:amritha_ayurveda/core/constants.dart';
 import 'package:amritha_ayurveda/mixins/form_validator_mixin.dart';
-import 'package:amritha_ayurveda/models/treatment_model.dart';
+import 'package:amritha_ayurveda/features/register_screen/models/treatment_model.dart';
 import 'package:amritha_ayurveda/services/size_utils.dart';
 import 'package:amritha_ayurveda/widgets/app_button.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +14,7 @@ import 'widgets/patient_details_section.dart';
 import 'widgets/payment_details_section.dart';
 import 'widgets/treatment_section.dart';
 import 'widgets/register_form_scope.dart';
+import 'widgets/amount_details_section.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const String path = '/register-screen';
@@ -25,7 +26,10 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class RegisterScreenState extends State<RegisterScreen>
-    with FormValidatorMixin, RegisterDataMixin, RegisterSubmitMixin {
+    with
+        FormValidatorMixin<RegisterScreen>,
+        RegisterDataMixin<RegisterScreen>,
+        RegisterSubmitMixin<RegisterScreen> {
   @override
   void initState() {
     super.initState();
@@ -82,6 +86,8 @@ class RegisterScreenState extends State<RegisterScreen>
                           const TreatmentSection(),
                           gapLarge,
                           const PaymentDetailsSection(),
+                          gapLarge,
+                          const AmountDetailsSection(),
                           gapLarge,
                           const DatePickerSection(),
                           gapLarge,

@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:core';
 import 'package:amritha_ayurveda/core/api_constants.dart';
 import 'package:amritha_ayurveda/core/error_exception_handler.dart';
-import 'package:amritha_ayurveda/models/branch_model.dart';
-import 'package:amritha_ayurveda/models/patient_model.dart';
-import 'package:amritha_ayurveda/models/treatment_model.dart';
-import 'package:amritha_ayurveda/services/shared_preferences_services.dart';
+import 'package:amritha_ayurveda/features/register_screen/models/branch_model.dart';
+import 'package:amritha_ayurveda/features/register_screen/models/patient_model.dart';
+import 'package:amritha_ayurveda/features/register_screen/models/treatment_model.dart';
+import 'package:amritha_ayurveda/features/register_screen/models/register_patient_model.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
@@ -72,11 +72,7 @@ class DataRepository {
         APIConstants.login,
         data: FormData.fromMap(data),
       );
-      if (response.data['status'] == true) {
-        await SharedPreferencesService.i.setValue(
-          value: response.data['token'],
-        );
-      }
+
       return response;
     } catch (e) {
       throw handleError(e);
@@ -144,44 +140,11 @@ class DataRepository {
     }
   }
 
-  Future<Response> registerPatient({
-    required String name,
-    required String excecutive,
-    required String payment,
-    required String phone,
-    required String address,
-    required String totalAmount,
-    required String discountAmount,
-    required String advanceAmount,
-    required String balanceAmount,
-    required String dateAndTime,
-    required String id,
-    required String male,
-    required String female,
-    required String branch,
-    required String treatments,
-  }) async {
+  Future<Response> registerPatient(RegisterPatientModel patient) async {
     try {
-      final data = {
-        'name': name,
-        'excecutive': excecutive,
-        'payment': payment,
-        'phone': phone,
-        'address': address,
-        'total_amount': totalAmount,
-        'discount_amount': discountAmount,
-        'advance_amount': advanceAmount,
-        'balance_amount': balanceAmount,
-        'date_nd_time': dateAndTime,
-        'id': id,
-        'male': male,
-        'female': female,
-        'branch': branch,
-        'treatments': treatments,
-      };
       final response = await _client.post(
         APIConstants.patientUpdate,
-        data: FormData.fromMap(data),
+        data: FormData.fromMap(patient.toMap()),
       );
       return response;
     } catch (e) {

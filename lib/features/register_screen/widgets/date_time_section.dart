@@ -26,12 +26,7 @@ class DatePickerSection extends StatelessWidget {
           builder: (context, selectedDate, _) {
             return FormField<DateTime>(
               initialValue: selectedDate,
-              validator: (val) {
-                if (selectedDate == null) {
-                  return 'Please select a treatment date';
-                }
-                return null;
-              },
+              validator: state.dateValidator,
               builder: (formFieldState) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,10 +115,7 @@ class TimePickerSection extends StatelessWidget {
                     items: List.generate(24, (i) => i),
                     displayText: (h) => h.toString().padLeft(2, '0'),
                     onChanged: (val) => state.selectedHourNotifier.value = val,
-                    validator: (val) {
-                      if (val == null) return 'Required';
-                      return null;
-                    },
+                    validator: state.hourValidator,
                   );
                 },
               ),
@@ -141,10 +133,7 @@ class TimePickerSection extends StatelessWidget {
                     displayText: (m) => m.toString().padLeft(2, '0'),
                     onChanged: (val) =>
                         state.selectedMinuteNotifier.value = val,
-                    validator: (val) {
-                      if (val == null) return 'Required';
-                      return null;
-                    },
+                    validator: state.minuteValidator,
                   );
                 },
               ),

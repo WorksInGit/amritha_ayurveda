@@ -1,6 +1,6 @@
 import 'package:amritha_ayurveda/core/repository.dart';
-import 'package:amritha_ayurveda/models/branch_model.dart';
-import 'package:amritha_ayurveda/models/treatment_model.dart';
+import 'package:amritha_ayurveda/features/register_screen/models/branch_model.dart';
+import 'package:amritha_ayurveda/features/register_screen/models/treatment_model.dart';
 import 'package:amritha_ayurveda/services/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 

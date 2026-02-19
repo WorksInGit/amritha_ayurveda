@@ -1,8 +1,5 @@
 import 'package:amritha_ayurveda/core/constants.dart';
-import 'package:amritha_ayurveda/core/app_route.dart';
-import 'package:amritha_ayurveda/features/home_screen/home_screen.dart';
 import 'package:amritha_ayurveda/gen/assets.gen.dart';
-import 'package:amritha_ayurveda/services/snackbar_utils.dart';
 import 'package:amritha_ayurveda/theme/theme.dart';
 import 'package:amritha_ayurveda/widgets/app_button.dart';
 import 'package:amritha_ayurveda/widgets/app_text_field.dart';
@@ -10,9 +7,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
-
-import '../../services/size_utils.dart';
-import 'package:amritha_ayurveda/core/repository.dart';
+import 'package:amritha_ayurveda/services/size_utils.dart';
+import 'package:amritha_ayurveda/features/login_screen/mixins/email_password_mixin.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String path = '/login-screen';
@@ -22,16 +18,10 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  bool isLoading = false;
-  final _formKey = GlobalKey<FormState>();
-  final usernameController = TextEditingController(text: 'test_user');
-  final passwordController = TextEditingController(text: '12345678');
-  bool isPasswordVisible = false;
-
+class _LoginScreenState extends State<LoginScreen> with EmailPasswordMixin {
   @override
   void dispose() {
-    usernameController.dispose();
+    emailController.dispose();
     passwordController.dispose();
     super.dispose();
   }
@@ -75,9 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     gapXL,
 
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Form(
-                        key: _formKey,
+                        key: formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -90,93 +80,43 @@ class _LoginScreenState extends State<LoginScreen> {
                             AppTextField(
                               label: 'Email',
                               hintText: 'Enter your email',
-                              controller: usernameController,
+                              controller: emailController,
                               keyboardType: TextInputType.emailAddress,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your email';
-                                }
-                                return null;
-                              },
+                              validator: emailValidator,
                             ),
-                            Gap(middlePadding),
+                            const Gap(middlePadding),
 
                             AppTextField(
                               label: 'Password',
                               hintText: 'Enter password',
                               controller: passwordController,
-                              obscureText: !isPasswordVisible,
+                              obscureText: !passwordVisible,
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  isPasswordVisible
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
+                                  passwordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
                                   color: Colors.grey,
                                 ),
-                                onPressed: () {
-                                  setState(() {
-                                    isPasswordVisible = !isPasswordVisible;
-                                  });
-                                },
+                                onPressed: togglePasswordVisibility,
                               ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your password';
-                                }
-                                return null;
-                              },
+                              validator: passwordValidator,
                             ),
 
                             Gap(84.h),
 
                             AppButton(
                               text: 'Login',
-                              onPressed: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  setState(() {
-                                    isLoading = true;
-                                  });
-                                  try {
-                                    final response = await DataRepository.i
-                                        .login(
-                                          username: usernameController.text,
-                                          password: passwordController.text,
-                                        );
-
-                                    if (mounted) {
-                                      showSuccessMessage(
-                                        response.data['message'],
-                                      );
-
-                                      if (mounted) {
-                                        navigate(
-                                          // ignore: use_build_context_synchronously
-                                          context,
-                                          HomeScreen.path,
-                                          replace: true,
-                                        );
-                                      }
-                                    }
-                                  } catch (e) {
-                                    if (mounted) {
-                                      showErrorMessage(e);
-                                    }
-                                  } finally {
-                                    if (mounted) {
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                    }
-                                  }
-                                }
+                              onPressed: () {
+                                signInWithEmailAndPassword(onSuccess: () {});
                               },
-                              isLoading: isLoading,
+                              isLoading: loginButtonLoading,
                             ),
                           ],
                         ),
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Padding(
                       padding: EdgeInsets.symmetric(
                         horizontal: 20,
@@ -194,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             TextSpan(
                               style: context.poppins50012.copyWith(
-                                color: Color(0xFF0028FC),
+                                color: const Color(0xFF0028FC),
                               ),
                               text: 'Terms and Conditions',
                               recognizer: TapGestureRecognizer()..onTap = () {},
@@ -205,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             TextSpan(
                               style: context.poppins50012.copyWith(
-                                color: Color(0xFF0028FC),
+                                color: const Color(0xFF0028FC),
                               ),
                               text: 'Privacy Policy.',
                               recognizer: TapGestureRecognizer()..onTap = () {},
